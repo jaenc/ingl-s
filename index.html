@@ -1,1313 +1,364 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-
-// Dialogues data structured from the provided markdown.
-// This data is embedded directly for simplicity, but could be fetched from an API.
-const dialoguesData = {
-  "Aeropuerto y Recogida de Coche": {
-    context: "Acabas de aterrizar en el Aeropuerto de Bristol (BRS) y necesitas pasar por los controles de inmigración y aduanas, para luego dirigirte a la oficina de alquiler de coches.",
-    sections: [
-      {
-        title: "En Inmigración",
-        interactions: [
-          {
-            type: "question",
-            english: "Good morning/afternoon/evening. What is the purpose of your visit to the UK?",
-            spanish: "Buenos días/tardes/noches. ¿Cuál es el propósito de su visita al Reino Unido?"
-          },
-          {
-            type: "response",
-            english: "Good morning/afternoon/evening. I'm here for a holiday/vacation. I'll be travelling through the Cotswolds, Cornwall, and Dartmoor.",
-            spanish: "Buenos días/tardes/noches. Estoy aquí de vacaciones. Viajaré por los Cotswolds, Cornualles y Dartmoor."
-          },
-          {
-            type: "question",
-            english: "How long will you be staying?",
-            spanish: "¿Cuánto tiempo se va a quedar?"
-          },
-          {
-            type: "response",
-            english: "I will be staying for 8 days, from June 28th to July 5th.",
-            spanish: "Me quedaré 8 días, del 28 de junio al 5 de julio."
-          },
-          {
-            type: "question",
-            english: "Are you travelling alone or with others?",
-            spanish: "¿Viaja solo o con otros?"
-          },
-          {
-            type: "response",
-            english: "I'm travelling with my family/friends.",
-            spanish: "Viajo con mi familia/amigos."
-          },
-          {
-            type: "response",
-            english: "I'm travelling alone.",
-            spanish: "Viajo solo/a."
-          },
-          {
-            type: "question",
-            english: "Where will you be staying?",
-            spanish: "¿Dónde se va a hospedar?"
-          },
-          {
-            type: "response",
-            english: "I will be staying in different hotels, starting at The Colesbourne Inn in the Cotswolds, then The Harbour Inn in Porthleven, and finally The Moorland Hotel near Dartmoor.",
-            spanish: "Me hospedaré en diferentes hoteles, empezando en The Colesbourne Inn en los Cotswolds, luego The Harbour Inn en Porthleven, y finalmente The Moorland Hotel cerca de Dartmoor."
-          },
-          {
-            type: "question",
-            english: "Do you have a return ticket?",
-            spanish: "¿Tiene billete de vuelta?"
-          },
-          {
-            type: "response",
-            english: "Yes, here it is. My flight departs from Bristol Airport on July 5th.",
-            spanish: "Sí, aquí está. Mi vuelo sale del Aeropuerto de Bristol el 5 de julio."
-          },
-          {
-            type: "question",
-            english: "Do you have anything to declare?",
-            spanish: "¿Tiene algo que declarar?"
-          },
-          {
-            type: "response",
-            english: "No, nothing to declare, thank you.",
-            spanish: "No, nada que declarar, gracias."
-          }
-        ]
-      },
-      {
-        title: "En la Oficina de Alquiler de Coches",
-        interactions: [
-          {
-            type: "question",
-            english: "Hello, how can I help you?",
-            spanish: "Hola, ¿cómo puedo ayudarle?"
-          },
-          {
-            type: "response",
-            english: "Hello, I have a car reservation under [your name]. The reference number is [your booking reference].",
-            spanish: "Hola, tengo una reserva de coche a nombre de [tu nombre]. El número de referencia es [tu número de reserva]."
-          },
-          {
-            type: "question",
-            english: "Could I see your driving license and credit card, please?",
-            spanish: "¿Podría ver su carné de conducir y su tarjeta de crédito, por favor?"
-          },
-          {
-            type: "response",
-            english: "Certainly, here they are. This is my Spanish driving license.",
-            spanish: "Claro, aquí están. Este es mi carné de conducir español."
-          },
-          {
-            type: "question",
-            english: "Would you like to add any extra insurance or a sat nav?",
-            spanish: "¿Le gustaría añadir algún seguro extra o un GPS?"
-          },
-          {
-            type: "response",
-            english: "No, thank you, I think I have full coverage already. And I'll be using my phone for navigation.",
-            spanish: "No, gracias, creo que ya tengo cobertura completa. Y usaré mi teléfono para la navegación."
-          },
-          {
-            type: "response",
-            english: "Yes, please, what are the options for full coverage insurance, and how much would that be per day?",
-            spanish: "Sí, por favor, ¿cuáles son las opciones para el seguro a todo riesgo y cuánto sería por día?"
-          },
-          {
-            type: "question",
-            english: "The fuel policy is full to full. Please return the car with a full tank.",
-            spanish: "La política de combustible es lleno a lleno. Por favor, devuelva el coche con el depósito lleno."
-          },
-          {
-            type: "response",
-            english: "Understood, thank you. And where exactly do I pick up the car?",
-            spanish: "Entendido, gracias. ¿Y dónde recojo exactamente el coche?"
-          },
-          {
-            type: "question",
-            english: "Is there a specific car park or bay number for pick-up?",
-            spanish: "¿Hay un aparcamiento o número de plaza específico para la recogida?"
-          },
-          {
-            type: "question",
-            english: "What should I do if I have a breakdown or an accident?",
-            spanish: "¿Qué debo hacer si tengo una avería o un accidente?"
-          },
-          {
-            type: "question",
-            english: "Does the car have an automatic or manual transmission?",
-            spanish: "¿El coche tiene transmisión automática o manual?"
-          }
-        ]
-      }
-    ]
-  },
-  "En el Hotel / Alojamiento": {
-    context: "Llegando a tu hotel para hacer el check-in después de un día de viaje.",
-    sections: [
-      {
-        title: "En la Recepción",
-        interactions: [
-          {
-            type: "question",
-            english: "Good evening, welcome to [Hotel Name]. Do you have a reservation?",
-            spanish: "Buenas noches, bienvenido a [Nombre del Hotel]. ¿Tiene una reserva?"
-          },
-          {
-            type: "response",
-            english: "Good evening, yes, I have a reservation under [your name]. My confirmation number is [confirmation number].",
-            spanish: "Buenas noches, sí, tengo una reserva a nombre de [tu nombre]. Mi número de confirmación es [número de confirmación]."
-          },
-          {
-            type: "question",
-            english: "Could I have your passport/ID, please?",
-            spanish: "¿Podría ver su pasaporte/DNI, por favor?"
-          },
-          {
-            type: "response",
-            english: "Here you go.",
-            spanish: "Aquí tiene."
-          },
-          {
-            type: "question",
-            english: "How long will you be staying?",
-            spanish: "¿Cuánto tiempo se va a quedar?"
-          },
-          {
-            type: "response",
-            english: "We'll be staying for X nights, until [date of check-out].",
-            spanish: "Nos quedaremos X noches, hasta el [fecha de salida]."
-          },
-          {
-            type: "question",
-            english: "How will you be paying for your stay?",
-            spanish: "¿Cómo va a pagar su estancia?"
-          },
-          {
-            type: "response",
-            english: "By card, please.",
-            spanish: "Con tarjeta, por favor."
-          },
-          {
-            type: "question",
-            english: "Here's your key card/key. Your room number is [room number] on the [floor number] floor. Breakfast is served from [time] to [time] in the [location].",
-            spanish: "Aquí tiene su tarjeta/llave. Su número de habitación es [número de habitación] en la [número de planta] planta. El desayuno se sirve de [hora] a [hora] en [ubicación]."
-          },
-          {
-            type: "response",
-            english: "Thank you very much. Is there Wi-Fi available in the room? What's the password?",
-            spanish: "Muchas gracias. ¿Hay Wi-Fi disponible en la habitación? ¿Cuál es la contraseña?"
-          },
-          {
-            type: "response",
-            english: "What time is check-out tomorrow/on [date of check-out]?",
-            spanish: "¿A qué hora es el check-out mañana/el [fecha de salida]?"
-          },
-          {
-            type: "question",
-            english: "Could you tell me the best way to get to my room?",
-            spanish: "¿Podría indicarme la mejor manera de llegar a mi habitación?"
-          },
-          {
-            type: "question",
-            english: "Is there someone who can help with the luggage?",
-            spanish: "¿Hay alguien que pueda ayudarme con el equipaje?"
-          }
-        ]
-      },
-      {
-        title: "Para Consultas Generales en el Hotel",
-        interactions: [
-          {
-            type: "question",
-            english: "Excuse me, could you tell me how to get to [place], please?",
-            spanish: "Disculpe, ¿podría decirme cómo llegar a [lugar], por favor?"
-          },
-          {
-            type: "question",
-            english: "Could you recommend a good local restaurant nearby, perhaps serving traditional British food?",
-            spanish: "¿Podría recomendarme un buen restaurante local cerca, quizás que sirva comida tradicional británica?"
-          },
-          {
-            type: "question",
-            english: "Is there a taxi service available from the hotel, and could you help me book one for [time]?",
-            spanish: "¿Hay servicio de taxi disponible desde el hotel, y podría ayudarme a reservar uno para las [hora]?"
-          },
-          {
-            type: "question",
-            english: "Could I have an extra pillow/towel/blanket, please?",
-            spanish: "¿Podría tener una almohada/toalla/manta extra, por favor?"
-          },
-          {
-            type: "question",
-            english: "What are the opening hours for the hotel restaurant/bar?",
-            spanish: "¿Cuál es el horario de apertura del restaurante/bar del hotel?"
-          },
-          {
-            type: "question",
-            english: "Is there a gym or swimming pool here, and what are the hours?",
-            spanish: "¿Hay gimnasio o piscina aquí, y cuáles son los horarios?"
-          },
-          {
-            type: "question",
-            english: "Could I request a wake-up call for [time] tomorrow morning?",
-            spanish: "¿Podría solicitar una llamada despertador para las [hora] de mañana por la mañana?"
-          },
-          {
-            type: "question",
-            english: "Is there parking available for guests, and is there a charge?",
-            spanish: "¿Hay aparcamiento disponible para los huéspedes, y tiene coste?"
-          },
-          {
-            type: "question",
-            english: "Could you tell me about local transport options, like bus stops or train stations?",
-            spanish: "¿Podría informarme sobre las opciones de transporte local, como paradas de autobús o estaciones de tren?"
-          }
-        ]
-      }
-    ]
-  },
-  "En Restaurantes y Pubs": {
-    context: "Interactuando con el personal para pedir mesa, comida y bebida, o al pagar la cuenta.",
-    sections: [
-      {
-        title: "Para Pedir una Mesa",
-        interactions: [
-          {
-            type: "question",
-            english: "Hello, a table for two, please.",
-            spanish: "Hola, una mesa para dos, por favor."
-          },
-          {
-            type: "question",
-            english: "Do you have any availability for dinner tonight around [time]?",
-            spanish: "¿Tienen disponibilidad para cenar esta noche alrededor de las [hora]?"
-          },
-          {
-            type: "question",
-            english: "We have a reservation under [your name] for [number] people at [time].",
-            spanish: "Tenemos una reserva a nombre de [tu nombre] para [número] personas a las [hora]."
-          },
-          {
-            type: "question",
-            english: "Smoking or non-smoking?",
-            spanish: "¿Fumadores o no fumadores?"
-          },
-          {
-            type: "response",
-            english: "Non-smoking, please.",
-            spanish: "No fumadores, por favor."
-          },
-          {
-            type: "question",
-            english: "Do you have any tables available outside/on the terrace?",
-            spanish: "¿Tienen mesas disponibles fuera/en la terraza?"
-          },
-          {
-            type: "question",
-            english: "Could we get a high chair for a child, please?",
-            spanish: "¿Podríamos tener una silla alta para un niño, por favor?"
-          },
-          {
-            type: "question",
-            english: "It will be a 15-minute wait for a table, would that be okay?",
-            spanish: "Habrá que esperar 15 minutos por una mesa, ¿estaría bien?"
-          },
-          {
-            type: "response",
-            english: "Yes, that's fine, thank you.",
-            spanish: "Sí, está bien, gracias."
-          },
-          {
-            type: "response",
-            english: "Could we wait at the bar?",
-            spanish: "¿Podríamos esperar en la barra?"
-          }
-        ]
-      },
-      {
-        title: "Para Pedir Comida y Bebida",
-        interactions: [
-          {
-            type: "question",
-            english: "Could I see the menu, please? / Excuse me, could we see the menu?",
-            spanish: "¿Podría ver el menú, por favor? / Disculpe, ¿podríamos ver el menú?"
-          },
-          {
-            type: "question",
-            english: "Are you ready to order?",
-            spanish: "¿Están listos para pedir?"
-          },
-          {
-            type: "response",
-            english: "Yes, I'll have the [dish name], please.",
-            spanish: "Sí, tomaré el/la [nombre del plato], por favor."
-          },
-          {
-            type: "question",
-            english: "What do you recommend? / What are the daily specials today?",
-            spanish: "¿Qué me recomienda? / ¿Cuáles son los especiales del día de hoy?"
-          },
-          {
-            type: "question",
-            english: "Is this dish vegetarian/vegan/gluten-free? / Does this contain any nuts/dairy/shellfish? I have an allergy to [allergy].",
-            spanish: "¿Este plato es vegetariano/vegano/sin gluten? / ¿Contiene frutos secos/lácteos/marisco? Tengo alergia a [alergia]."
-          },
-          {
-            type: "question",
-            english: "Could I have a pint of local ale, please? / And a glass of [wine/juice/fizzy drink], please.",
-            spanish: "¿Podría tomar una pinta de cerveza local, por favor? / Y un vaso de [vino/zumo/bebida con gas], por favor."
-          },
-          {
-            type: "question",
-            english: "A glass of still/sparkling water, please.",
-            spanish: "Un vaso de agua sin gas/con gas, por favor."
-          },
-          {
-            type: "question",
-            english: "Could I also have a side of chips/salad/seasonal vegetables with that?",
-            spanish: "¿Podría tener también una ración de patatas fritas/ensalada/verduras de temporada con eso?"
-          },
-          {
-            type: "question",
-            english: "Is the [dish name] a large portion, or would you recommend adding a side?",
-            spanish: "¿La ración de [nombre del plato] es grande, o recomendaría añadir una guarnición?"
-          },
-          {
-            type: "question",
-            english: "Could I have the dressing on the side, please?",
-            spanish: "¿Podría tener el aliño aparte, por favor?"
-          },
-          {
-            type: "question",
-            english: "Could you please tell me about the dessert menu?",
-            spanish: "¿Podría hablarme sobre el menú de postres, por favor?"
-          },
-          {
-            type: "question",
-            english: "Anything else for you?",
-            spanish: "¿Algo más para usted?"
-          },
-          {
-            type: "response",
-            english: "No, thank you, that will be all for now.",
-            spanish: "No, gracias, eso será todo por ahora."
-          },
-          {
-            type: "question",
-            english: "Excuse me, could we order some more drinks, please?",
-            spanish: "Disculpe, ¿podríamos pedir más bebidas, por favor?"
-          }
-        ]
-      },
-      {
-        title: "Al Final de la Comida",
-        interactions: [
-          {
-            type: "question",
-            english: "Could we have the bill, please? / Check, please.",
-            spanish: "¿Podríamos tener la cuenta, por favor? / La cuenta, por favor."
-          },
-          {
-            type: "question",
-            english: "Was everything to your satisfaction?",
-            spanish: "¿Todo fue de su agrado?"
-          },
-          {
-            type: "response",
-            english: "Yes, it was delicious, thank you. Everything was lovely, thank you very much.",
-            spanish: "Sí, estaba delicioso, gracias. Todo estuvo muy bien, muchas gracias."
-          },
-          {
-            type: "response",
-            english: "The food was generally good, but the [drink/side dish] was [too warm/cold/not what I ordered].",
-            spanish: "La comida estuvo bien en general, pero la [bebida/guarnición] estaba [demasiado caliente/fría/no era lo que pedí]."
-          },
-          {
-            type: "question",
-            english: "Are you paying by cash or card?",
-            spanish: "¿Va a pagar en efectivo o con tarjeta?"
-          },
-          {
-            type: "response",
-            english: "By card, please. / Can we pay separately? We'd like to split the bill, please.",
-            spanish: "Con tarjeta, por favor. / ¿Podemos pagar por separado? Nos gustaría dividir la cuenta, por favor."
-          },
-          {
-            type: "question",
-            english: "Is service included in the bill? / Is a tip expected, or is it discretionary?",
-            spanish: "¿Está incluido el servicio en la cuenta? / ¿Se espera propina, o es discrecional?"
-          },
-          {
-            type: "question",
-            english: "Could I get a receipt, please?",
-            spanish: "¿Podría darme un recibo, por favor?"
-          },
-          {
-            type: "question",
-            english: "Could we get this to go? / Can I get a doggy bag for this, please?",
-            spanish: "¿Podríamos llevar esto para llevar? / ¿Puedo pedir una bolsa para llevarme esto, por favor?"
-          }
-        ]
-      }
-    ]
-  },
-  "En Atracciones y Museos": {
-    context: "Comprando entradas, pidiendo información o navegando por el lugar.",
-    sections: [
-      {
-        title: "En la Entrada/Taquilla",
-        interactions: [
-          {
-            type: "question",
-            english: "Hello, how much is an adult ticket? / What's the admission fee for adults?",
-            spanish: "Hola, ¿cuánto cuesta una entrada para adulto? / ¿Cuál es la tarifa de entrada para adultos?"
-          },
-          {
-            type: "question",
-            english: "Two adult tickets, please, and one child ticket.",
-            spanish: "Dos entradas de adulto, por favor, y una de niño."
-          },
-          {
-            type: "question",
-            english: "Do you have any discounts for seniors/students/families?",
-            spanish: "¿Tienen algún descuento para mayores/estudiantes/familias?"
-          },
-          {
-            type: "question",
-            english: "Are you a member of [organisation]?",
-            spanish: "¿Es usted miembro de [organización]?"
-          },
-          {
-            type: "response",
-            english: "No, I'm not.",
-            spanish: "No, no lo soy."
-          },
-          {
-            type: "question",
-            english: "What time is the last entry? / What time does the museum close today?",
-            spanish: "¿A qué hora es la última entrada? / ¿A qué hora cierra el museo hoy?"
-          },
-          {
-            type: "question",
-            english: "Is there an audio guide available, and how much does it cost?",
-            spanish: "¿Hay una audioguía disponible y cuánto cuesta?"
-          },
-          {
-            type: "question",
-            english: "Are there any guided tours available today, and what are the times?",
-            spanish: "¿Hay visitas guiadas disponibles hoy, y cuáles son los horarios?"
-          },
-          {
-            type: "question",
-            english: "Is it better to book tickets online or can I just buy them here?",
-            spanish: "¿Es mejor reservar las entradas online o puedo comprarlas aquí directamente?"
-          }
-        ]
-      },
-      {
-        title: "Para Pedir Información General",
-        interactions: [
-          {
-            type: "question",
-            english: "Excuse me, where is the main exhibition/gallery?",
-            spanish: "Disculpe, ¿dónde está la exposición/galería principal?"
-          },
-          {
-            type: "question",
-            english: "Is photography allowed in all areas? / Can I use flash photography?",
-            spanish: "¿Se permite fotografiar en todas las áreas? / ¿Puedo usar flash al fotografiar?"
-          },
-          {
-            type: "question",
-            english: "Where are the restrooms/toilets?",
-            spanish: "¿Dónde están los baños?"
-          },
-          {
-            type: "question",
-            english: "What time does [specific area] close?",
-            spanish: "¿A qué hora cierra [área específica]?"
-          },
-          {
-            type: "question",
-            english: "Is the [specific exhibit] accessible for wheelchairs/strollers?",
-            spanish: "¿La [exposición específica] es accesible para sillas de ruedas/cochecitos?"
-          },
-          {
-            type: "question",
-            english: "Is there a gift shop or a café in the building?",
-            spanish: "¿Hay una tienda de regalos o una cafetería en el edificio?"
-          },
-          {
-            type: "question",
-            english: "Can you recommend which part to see first if I only have an hour?",
-            spanish: "¿Puede recomendarme qué parte ver primero si solo tengo una hora?"
-          }
-        ]
-      }
-    ]
-  },
-  "En Tiendas": {
-    context: "Comprando souvenirs, productos locales o alimentos en una tienda.",
-    sections: [
-      {
-        title: "Pregunta posible: Can I help you?",
-        interactions: [
-          {
-            type: "response",
-            english: "No, thank you, I'm just looking around for now.",
-            spanish: "No, gracias, solo estoy mirando por ahora."
-          },
-          {
-            type: "response",
-            english: "Yes, I'm looking for [item], do you have any [local cheese/fudge/jam]?",
-            spanish: "Sí, estoy buscando [artículo], ¿tienen [queso local/caramelo cremoso/mermelada]?"
-          },
-          {
-            type: "question",
-            english: "How much is this? / What's the price of this [item]?",
-            spanish: "¿Cuánto cuesta esto? / ¿Cuál es el precio de este [artículo]?"
-          },
-          {
-            type: "question",
-            english: "Do you have this in a different size/colour?",
-            spanish: "¿Tiene esto en otra talla/color?"
-          },
-          {
-            type: "question",
-            english: "Where is the checkout/till?",
-            spanish: "¿Dónde está la caja?"
-          },
-          {
-            type: "question",
-            english: "Are these products locally sourced?",
-            spanish: "¿Estos productos son de origen local?"
-          },
-          {
-            type: "question",
-            english: "Do you have any samples to try for the [cheese/jam]?",
-            spanish: "¿Tienen alguna muestra para probar del [queso/mermelada]?"
-          }
-        ]
-      },
-      {
-        title: "Al Pagar",
-        interactions: [
-          {
-            type: "question",
-            english: "Is that all for you today?",
-            spanish: "¿Es todo para usted hoy?"
-          },
-          {
-            type: "response",
-            english: "Yes, that's all, thank you.",
-            spanish: "Sí, eso es todo, gracias."
-          },
-          {
-            type: "question",
-            english: "Cash or card?",
-            spanish: "¿Efectivo o tarjeta?"
-          },
-          {
-            type: "response",
-            english: "Card, please.",
-            spanish: "Con tarjeta, por favor."
-          },
-          {
-            type: "response",
-            english: "Cash, please. Here's [amount].",
-            spanish: "Efectivo, por favor. Aquí tiene [cantidad]."
-          },
-          {
-            type: "question",
-            english: "Would you like a bag?",
-            spanish: "¿Quiere una bolsa?"
-          },
-          {
-            type: "response",
-            english: "Yes, please.",
-            spanish: "Sí, por favor."
-          },
-          {
-            type: "response",
-            english: "No, thank you, I have my own bag.",
-            spanish: "No, gracias, tengo mi propia bolsa."
-          },
-          {
-            type: "question",
-            english: "Could you gift wrap this, please? / Is it possible to have this gift wrapped?",
-            spanish: "¿Podría envolver esto para regalo, por favor? / ¿Es posible que me envuelvan esto para regalo?"
-          },
-          {
-            type: "response",
-            english: "Certainly, that will be an extra [amount].",
-            spanish: "Claro, eso será un extra de [cantidad]."
-          },
-          {
-            type: "response",
-            english: "Yes, we can do that for you, no problem.",
-            spanish: "Sí, podemos hacerlo por usted, sin problema."
-          },
-          {
-            type: "question",
-            english: "Could I get a gift receipt for this, please?",
-            spanish: "¿Podría darme un recibo de regalo para esto, por favor?"
-          },
-          {
-            type: "question",
-            english: "Do you accept [specific currency]?",
-            spanish: "¿Aceptan [moneda específica]?"
-          }
-        ]
-      }
-    ]
-  },
-  "Preguntas Generales y de Orientación": {
-    context: "Necesitas pedir direcciones, horarios o simplemente comunicarte educadamente.",
-    sections: [
-      {
-        title: "Para Preguntar por Direcciones",
-        interactions: [
-          {
-            type: "question",
-            english: "Excuse me, could you tell me how to get to [place], please?",
-            spanish: "Disculpe, ¿podría decirme cómo llegar a [lugar], por favor?"
-          },
-          {
-            type: "question",
-            english: "Is it far from here? / How far is it to [place]?",
-            spanish: "¿Está lejos de aquí? / ¿A qué distancia está [lugar]?"
-          },
-          {
-            type: "question",
-            english: "Which way is [direction/place]? / Am I going in the right direction for [place]?",
-            spanish: "¿Hacia dónde está [dirección/lugar]? / ¿Voy en la dirección correcta para [lugar]?"
-          },
-          {
-            type: "response",
-            english: "It's straight on for about 5 minutes, then turn left at the traffic lights. You'll see it on your right, next to the post office.",
-            spanish: "Es todo recto unos 5 minutos, luego gire a la izquierda en el semáforo. Lo verá a su derecha, junto a la oficina de correos."
-          },
-          {
-            type: "response",
-            english: "It's about a 10-minute walk from here, just follow this road.",
-            spanish: "Está a unos 10 minutos andando desde aquí, solo siga esta carretera."
-          },
-          {
-            type: "question",
-            english: "Could you show me on the map, please?",
-            spanish: "¿Podría mostrármelo en el mapa, por favor?"
-          },
-          {
-            type: "question",
-            english: "Is it quicker to walk or take a bus?",
-            spanish: "¿Es más rápido ir andando o coger un autobús?"
-          }
-        ]
-      },
-      {
-        title: "Para Preguntar por Horarios",
-        interactions: [
-          {
-            type: "question",
-            english: "What time does [place] open/close today?",
-            spanish: "¿A qué hora abre/cierra [lugar] hoy?"
-          },
-          {
-            type: "question",
-            english: "When is the next bus/train to [place]?",
-            spanish: "¿Cuándo es el próximo autobús/tren a [lugar]?"
-          },
-          {
-            type: "question",
-            english: "Are you open on public holidays?",
-            spanish: "¿Están abiertos en días festivos?"
-          },
-          {
-            type: "question",
-            english: "What are your opening hours on weekends?",
-            spanish: "¿Cuál es su horario de apertura los fines de semana?"
-          }
-        ]
-      },
-      {
-        title: "Disculparse y Agradecer",
-        interactions: [
-          {
-            type: "response",
-            english: "Excuse me.",
-            spanish: "Disculpe."
-          },
-          {
-            type: "response",
-            english: "Sorry.",
-            spanish: "Lo siento."
-          },
-          {
-            type: "response",
-            english: "I'm so sorry, I didn't mean to.",
-            spanish: "Lo siento mucho, no fue mi intención."
-          },
-          {
-            type: "response",
-            english: "Thank you.",
-            spanish: "Gracias."
-          },
-          {
-            type: "response",
-            english: "Thank you very much indeed.",
-            spanish: "Muchísimas gracias."
-          },
-          {
-            type: "response",
-            english: "You're welcome.",
-            spanish: "De nada."
-          },
-          {
-            type: "response",
-            english: "No worries.",
-            spanish: "No hay problema."
-          },
-          {
-            type: "response",
-            english: "That's very kind of you.",
-            spanish: "Es muy amable por su parte."
-          }
-        ]
-      }
-    ]
-  },
-  "En el Park & Ride": {
-    context: "Usando el servicio Park & Ride para aparcar tu coche fuera del centro y tomar un autobús o tren hacia el centro de la ciudad.",
-    sections: [
-      {
-        title: "En la Taquilla/Máquina de Billetes",
-        interactions: [
-          {
-            type: "question",
-            english: "Hello, how much is a return ticket to the city centre for two adults?",
-            spanish: "Hola, ¿cuánto cuesta un billete de ida y vuelta al centro de la ciudad para dos adultos?"
-          },
-          {
-            type: "question",
-            english: "Where do I catch the bus for the city centre from here?",
-            spanish: "¿Dónde cojo el autobús para el centro de la ciudad desde aquí?"
-          },
-          {
-            type: "question",
-            english: "Do you need a ticket for the parking as well, or is it included with the bus fare?",
-            spanish: "¿Necesita también un ticket para el aparcamiento, o está incluido con la tarifa del autobús?"
-          },
-          {
-            type: "response",
-            english: "Yes, please, include the parking ticket.",
-            spanish: "Sí, por favor, incluya el ticket de aparcamiento."
-          },
-          {
-            type: "question",
-            english: "Are there any family tickets or day passes available that include parking?",
-            spanish: "¿Hay billetes familiares o pases de día disponibles que incluyan el aparcamiento?"
-          },
-          {
-            type: "question",
-            english: "How often do the buses run to the city centre?",
-            spanish: "¿Con qué frecuencia pasan los autobuses al centro de la ciudad?"
-          },
-          {
-            type: "question",
-            english: "Do I need to validate my ticket before boarding the bus?",
-            spanish: "¿Necesito validar mi billete antes de subir al autobús?"
-          }
-        ]
-      },
-      {
-        title: "En el Autobús",
-        interactions: [
-          {
-            type: "question",
-            english: "Excuse me, does this bus go to [specific stop/attraction in city centre, e.g., Christ Church College / Radcliffe Camera]?",
-            spanish: "Disculpe, ¿este autobús va a [parada específica/atracción en el centro de la ciudad, por ejemplo, Christ Church College / Radcliffe Camera]?"
-          },
-          {
-            type: "response",
-            english: "Next stop, [stop name].",
-            spanish: "Próxima parada, [nombre de la parada]."
-          },
-          {
-            type: "question",
-            english: "Could you please tell me when we get to the stop for [attraction]?",
-            spanish: "¿Podría avisarme cuando lleguemos a la parada de [atracción], por favor?"
-          },
-          {
-            type: "question",
-            english: "How long does it take to get to the city centre from here?",
-            spanish: "¿Cuánto se tarda en llegar al centro de la ciudad desde aquí?"
-          }
-        ]
-      }
-    ]
-  }
-};
-
-// Main App Component
-const App = () => {
-  const [activeSection, setActiveSection] = useState('situations');
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('info'); // 'info', 'success', 'error'
-  const [isMessageVisible, setIsMessageVisible] = useState(false);
-
-  const showMessage = (msg, type = 'info') => {
-    setMessage(msg);
-    setMessageType(type);
-    setIsMessageVisible(true);
-    setTimeout(() => setIsMessageVisible(false), 5000); // Hide after 5 seconds
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 font-sans text-gray-800 flex flex-col items-center p-4">
-      <style>{`
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente de Inglés para Viajes</title>
+    <!-- Incluye Tailwind CSS para un diseño moderno y sencillo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Define la fuente Inter para todo el cuerpo */
         body { font-family: "Inter", sans-serif; }
-      `}</style>
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 font-sans text-gray-800 flex flex-col items-center p-4">
 
-      {isMessageVisible && (
-        <MessageBox message={message} type={messageType} onClose={() => setIsMessageVisible(false)} />
-      )}
+    <div class="w-full max-w-4xl bg-white p-6 rounded-xl shadow-lg mt-8 mb-8">
+        <h1 class="text-3xl font-bold text-center text-blue-700 mb-6">Diálogos por Situación</h1>
+        <p class="text-center text-gray-600 mb-8">Selecciona una situación para ver ejemplos de preguntas y respuestas en inglés y español.</p>
 
-      <Navbar setActiveSection={setActiveSection} activeSection={activeSection} />
-
-      <div className="w-full max-w-4xl bg-white p-6 rounded-xl shadow-lg mt-8 mb-8 flex-grow">
-        {activeSection === 'situations' && <SituationsSection dialoguesData={dialoguesData} />}
-        {activeSection === 'aiAssistant' && <AIAssistantSection dialoguesData={dialoguesData} showMessage={showMessage} />}
-        {activeSection === 'cameraTranslator' && <CameraTranslatorSection showMessage={showMessage} />}
-      </div>
-    </div>
-  );
-};
-
-// Navbar Component
-const Navbar = ({ setActiveSection, activeSection }) => {
-  const buttonClass = (sectionName) =>
-    `px-5 py-2 rounded-lg transition-all duration-300 text-lg font-medium shadow-md
-    ${activeSection === sectionName
-      ? 'bg-blue-600 text-white transform scale-105'
-      : 'bg-white text-blue-700 hover:bg-blue-50 hover:text-blue-800'
-    }`;
-
-  return (
-    <nav className="w-full max-w-4xl flex justify-center space-x-4 p-4 bg-blue-500 rounded-xl shadow-lg z-10">
-      <button
-        onClick={() => setActiveSection('situations')}
-        className={buttonClass('situations')}
-      >
-        <i className="lucide-book-open inline-block mr-2"></i> Situaciones
-      </button>
-      <button
-        onClick={() => setActiveSection('aiAssistant')}
-        className={buttonClass('aiAssistant')}
-      >
-        <i className="lucide-sparkles inline-block mr-2"></i> Asistente IA
-      </button>
-      <button
-        onClick={() => setActiveSection('cameraTranslator')}
-        className={buttonClass('cameraTranslator')}
-      >
-        <i className="lucide-camera inline-block mr-2"></i> Traductor con Cámara
-      </button>
-    </nav>
-  );
-};
-
-// Situations Section Component
-const SituationsSection = ({ dialoguesData }) => {
-  const [selectedSituation, setSelectedSituation] = useState('');
-
-  return (
-    <div className="p-4">
-      <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">Diálogos por Situación</h2>
-      <p className="text-center text-gray-600 mb-8">Selecciona una situación para ver ejemplos de preguntas y respuestas en inglés y español.</p>
-
-      <div className="mb-8">
-        <label htmlFor="situation-select" className="block text-xl font-semibold mb-3 text-blue-600">
-          Selecciona una Situación:
-        </label>
-        <select
-          id="situation-select"
-          className="w-full p-3 border border-blue-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg bg-white"
-          value={selectedSituation}
-          onChange={(e) => setSelectedSituation(e.target.value)}
-        >
-          <option value="" disabled>-- Elige una situación --</option>
-          {Object.keys(dialoguesData).map((key) => (
-            <option key={key} value={key}>
-              {key}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {selectedSituation && dialoguesData[selectedSituation] && (
-        <div className="bg-blue-50 p-6 rounded-xl shadow-md border border-blue-200">
-          <h3 className="text-2xl font-bold text-blue-700 mb-4">{selectedSituation}</h3>
-          <p className="text-gray-700 mb-6 italic">{dialoguesData[selectedSituation].context}</p>
-
-          {dialoguesData[selectedSituation].sections.map((section, index) => (
-            <div key={index} className="mb-6 last:mb-0 bg-white p-5 rounded-lg shadow-sm border border-blue-100">
-              <h4 className="text-xl font-semibold text-blue-600 mb-4 border-b pb-2 border-blue-200">{section.title}</h4>
-              <div className="space-y-4">
-                {section.interactions.map((interaction, i) => (
-                  <div key={i} className={`p-4 rounded-lg shadow-inner ${interaction.type === 'question' ? 'bg-blue-100' : 'bg-green-50'}`}>
-                    <p className="font-semibold text-lg text-gray-800">
-                      {interaction.type === 'question' ? 'Pregunta:' : 'Tu Respuesta:'}
-                    </p>
-                    <p className="text-blue-900 font-medium text-xl mt-1">{interaction.english}</p>
-                    <p className="text-gray-600 italic text-md mt-1">{interaction.spanish}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-// AI Assistant Section Component
-const AIAssistantSection = ({ dialoguesData, showMessage }) => {
-  const [selectedSituation, setSelectedSituation] = useState('');
-  const [userPrompt, setUserPrompt] = useState('');
-  const [aiResponse, setAiResponse] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const handleGenerateDialogues = async () => {
-    if (!selectedSituation) {
-      showMessage('Por favor, selecciona una situación.', 'error');
-      return;
-    }
-    setLoading(true);
-    setAiResponse('');
-
-    let prompt = `Eres un experto asistente de inglés para viajes. Genera 3-5 nuevos ejemplos de diálogos (pares de preguntas y respuestas) para un turista en Inglaterra en el contexto de "${selectedSituation}". Los diálogos deben ser realistas, útiles para interacciones comunes y utilizar un lenguaje educado. Proporciona tanto la pregunta en inglés como una respuesta adecuada en inglés. Si el usuario añade una solicitud específica, incorpórala.`;
-
-    if (userPrompt) {
-      prompt += ` Solicitud específica del usuario: "${userPrompt}"`;
-    }
-
-    try {
-      let chatHistory = [];
-      chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-      const payload = { contents: chatHistory };
-      const apiKey = ""; // Canvas will automatically provide this.
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      const result = await response.json();
-
-      if (result.candidates && result.candidates.length > 0 &&
-        result.candidates[0].content && result.candidates[0].content.parts &&
-        result.candidates[0].content.parts.length > 0) {
-        const text = result.candidates[0].content.parts[0].text;
-        setAiResponse(text);
-      } else {
-        showMessage('No se pudo generar una respuesta. Inténtalo de nuevo.', 'error');
-        console.error('Unexpected API response structure:', result);
-      }
-    } catch (error) {
-      console.error('Error calling AI model:', error);
-      showMessage('Hubo un error al conectar con el asistente de IA. Por favor, inténtalo más tarde.', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="p-4">
-      <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">Asistente de IA para Diálogos</h2>
-      <p className="text-center text-gray-600 mb-8">Deja que la IA te proponga nuevos diálogos adaptados a diferentes situaciones. ¡Ideal para practicar!</p>
-
-      <div className="mb-6">
-        <label htmlFor="ai-situation-select" className="block text-xl font-semibold mb-3 text-blue-600">
-          Selecciona una Situación para la IA:
-        </label>
-        <select
-          id="ai-situation-select"
-          className="w-full p-3 border border-blue-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg bg-white"
-          value={selectedSituation}
-          onChange={(e) => setSelectedSituation(e.target.value)}
-        >
-          <option value="" disabled>-- Elige una situación --</option>
-          {Object.keys(dialoguesData).map((key) => (
-            <option key={key} value={key}>
-              {key}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="mb-6">
-        <label htmlFor="user-prompt" className="block text-xl font-semibold mb-3 text-blue-600">
-          Solicitud específica (opcional):
-        </label>
-        <textarea
-          id="user-prompt"
-          className="w-full p-3 border border-blue-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg bg-white min-h-[100px]"
-          placeholder="Ej: 'Quiero diálogos sobre cómo pedir indicaciones a un taxi.'"
-          value={userPrompt}
-          onChange={(e) => setUserPrompt(e.target.value)}
-        ></textarea>
-      </div>
-
-      <button
-        onClick={handleGenerateDialogues}
-        className="w-full bg-green-600 text-white py-3 rounded-lg text-xl font-bold shadow-md hover:bg-green-700 transition-all duration-300 transform hover:scale-105 flex items-center justify-center"
-        disabled={loading}
-      >
-        {loading ? (
-          <>
-            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Generando...
-          </>
-        ) : (
-          <>
-            <i className="lucide-sparkles inline-block mr-2"></i> Generar Diálogos
-          </>
-        )}
-      </button>
-
-      {aiResponse && (
-        <div className="mt-8 bg-blue-50 p-6 rounded-xl shadow-md border border-blue-200">
-          <h3 className="text-2xl font-bold text-blue-700 mb-4">Diálogos Generados por IA:</h3>
-          <div className="prose max-w-none text-gray-800">
-            {aiResponse.split('\n').map((line, idx) => (
-              <p key={idx} className="mb-2">{line}</p>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Camera Translator Section Component
-const CameraTranslatorSection = ({ showMessage }) => {
-  const videoRef = useRef(null);
-  const canvasRef = useRef(null);
-  const [stream, setStream] = useState(null);
-  const [capturedImage, setCapturedImage] = useState(null);
-  const [translatedText, setTranslatedText] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  // Function to start camera
-  const startCamera = async () => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-    }
-    setCapturedImage(null);
-    setTranslatedText('');
-    try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' } // Prefer back camera
-      });
-      videoRef.current.srcObject = mediaStream;
-      setStream(mediaStream);
-      showMessage('Cámara activada.', 'success');
-    } catch (err) {
-      console.error("Error accessing camera: ", err);
-      showMessage('No se pudo acceder a la cámara. Asegúrate de dar permisos.', 'error');
-    }
-  };
-
-  // Function to stop camera
-  const stopCamera = () => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-      setStream(null);
-      videoRef.current.srcObject = null;
-      showMessage('Cámara desactivada.', 'info');
-    }
-  };
-
-  // Function to capture image
-  const captureImage = () => {
-    if (!videoRef.current || !canvasRef.current) return;
-
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
-
-    // Set canvas dimensions to match video feed
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const imageData = canvas.toDataURL('image/png');
-    setCapturedImage(imageData);
-    showMessage('Imagen capturada. Procesando traducción...', 'info');
-    translateImage(imageData);
-  };
-
-  // Function to translate image using AI
-  const translateImage = async (imageData) => {
-    setLoading(true);
-    setTranslatedText('');
-    const base64ImageData = imageData.split(',')[1]; // Get base64 string without data:image/png;base64,
-
-    try {
-      let chatHistory = [];
-      const payload = {
-        contents: [
-          {
-            role: "user",
-            parts: [
-              { text: "Identify any English text in this image and provide both the original English text and its Spanish translation. If there's multiple pieces of text, list them clearly. Format: Original: [English Text] Translation: [Spanish Translation]. If no English text is found, state that." },
-              {
-                inlineData: {
-                  mimeType: "image/png",
-                  data: base64ImageData
-                }
-              }
-            ]
-          }
-        ],
-      };
-      const apiKey = ""; // Canvas will automatically provide this.
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      const result = await response.json();
-
-      if (result.candidates && result.candidates.length > 0 &&
-        result.candidates[0].content && result.candidates[0].content.parts &&
-        result.candidates[0].content.parts.length > 0) {
-        const text = result.candidates[0].content.parts[0].text;
-        setTranslatedText(text);
-        showMessage('Traducción completada.', 'success');
-      } else {
-        showMessage('No se pudo traducir la imagen. Inténtalo de nuevo.', 'error');
-        console.error('Unexpected API response structure:', result);
-      }
-    } catch (error) {
-      console.error('Error calling AI model for translation:', error);
-      showMessage('Hubo un error al procesar la imagen para traducción. Por favor, inténtalo más tarde.', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    // Cleanup stream when component unmounts
-    return () => {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
-    };
-  }, [stream]);
-
-  return (
-    <div className="p-4 flex flex-col items-center">
-      <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">Traductor con Cámara</h2>
-      <p className="text-center text-gray-600 mb-8">Activa tu cámara, captura una imagen con texto en inglés y la IA lo traducirá al español.</p>
-
-      <div className="w-full max-w-lg mb-6 bg-gray-100 rounded-xl shadow-inner p-4">
-        <video ref={videoRef} autoPlay playsInline className="w-full h-auto rounded-lg mb-4 bg-black"></video>
-        <canvas ref={canvasRef} className="hidden"></canvas> {/* Hidden canvas for image capture */}
-        <div className="flex justify-center space-x-4">
-          {!stream ? (
-            <button
-              onClick={startCamera}
-              className="bg-purple-600 text-white py-3 px-6 rounded-lg text-lg font-bold shadow-md hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 flex items-center justify-center"
+        <div class="mb-8">
+            <label for="situation-select" class="block text-xl font-semibold mb-3 text-blue-600">
+                Selecciona una Situación:
+            </label>
+            <select
+                id="situation-select"
+                class="w-full p-3 border border-blue-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg bg-white"
+                onchange="displayDialogues()"
             >
-              <i className="lucide-camera-off inline-block mr-2"></i> Activar Cámara
-            </button>
-          ) : (
-            <>
-              <button
-                onClick={captureImage}
-                className="bg-blue-600 text-white py-3 px-6 rounded-lg text-lg font-bold shadow-md hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 flex items-center justify-center"
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Traduciendo...
-                  </>
-                ) : (
-                  <>
-                    <i className="lucide-image inline-block mr-2"></i> Capturar y Traducir
-                  </>
-                )}
-              </button>
-              <button
-                onClick={stopCamera}
-                className="bg-red-600 text-white py-3 px-6 rounded-lg text-lg font-bold shadow-md hover:bg-red-700 transition-all duration-300 transform hover:scale-105 flex items-center justify-center"
-              >
-                <i className="lucide-camera-off inline-block mr-2"></i> Detener Cámara
-              </button>
-            </>
-          )}
+                <option value="" disabled selected>-- Elige una situación --</option>
+                <!-- Las opciones se generarán dinámicamente con JavaScript -->
+            </select>
         </div>
-      </div>
 
-      {capturedImage && (
-        <div className="w-full max-w-lg mb-6">
-          <h3 className="text-xl font-bold text-blue-700 mb-3">Imagen Capturada:</h3>
-          <img src={capturedImage} alt="Captured from camera" className="w-full h-auto rounded-lg shadow-md border border-gray-300" />
+        <div id="dialogues-display" class="bg-blue-50 p-6 rounded-xl shadow-md border border-blue-200 hidden">
+            <!-- Los diálogos se mostrarán aquí -->
         </div>
-      )}
-
-      {translatedText && (
-        <div className="w-full max-w-lg bg-blue-50 p-6 rounded-xl shadow-md border border-blue-200">
-          <h3 className="text-2xl font-bold text-blue-700 mb-4">Traducción:</h3>
-          <div className="prose max-w-none text-gray-800">
-            {translatedText.split('\n').map((line, idx) => (
-              <p key={idx} className="mb-2">{line}</p>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
-  );
-};
 
-// Message Box Component (replaces alert/confirm)
-const MessageBox = ({ message, type, onClose }) => {
-  const bgColor = {
-    info: 'bg-blue-500',
-    success: 'bg-green-500',
-    error: 'bg-red-500',
-  }[type];
+    <script>
+        // Datos de los diálogos, organizados por situación
+        const dialoguesData = {
+            "Aeropuerto y Recogida de Coche": {
+                context: "Acabas de aterrizar en el Aeropuerto de Bristol (BRS) y necesitas pasar por los controles de inmigración y aduanas, para luego dirigirte a la oficina de alquiler de coches.",
+                sections: [
+                    {
+                        title: "En Inmigración",
+                        interactions: [
+                            { type: "question", english: "Good morning/afternoon/evening. What is the purpose of your visit to the UK?", spanish: "Buenos días/tardes/noches. ¿Cuál es el propósito de su visita al Reino Unido?" },
+                            { type: "response", english: "Good morning/afternoon/evening. I'm here for a holiday/vacation. I'll be travelling through the Cotswolds, Cornwall, and Dartmoor.", spanish: "Buenos días/tardes/noches. Estoy aquí de vacaciones. Viajaré por los Cotswolds, Cornualles y Dartmoor." },
+                            { type: "question", english: "How long will you be staying?", spanish: "¿Cuánto tiempo se va a quedar?" },
+                            { type: "response", english: "I will be staying for 8 days, from June 28th to July 5th.", spanish: "Me quedaré 8 días, del 28 de junio al 5 de julio." },
+                            { type: "question", english: "Are you travelling alone or with others?", spanish: "¿Viaja solo o con otros?" },
+                            { type: "response", english: "I'm travelling with my family/friends.", spanish: "Viajo con mi familia/amigos." },
+                            { type: "response", english: "I'm travelling alone.", spanish: "Viajo solo/a." },
+                            { type: "question", english: "Where will you be staying?", spanish: "¿Dónde se va a hospedar?" },
+                            { type: "response", english: "I will be staying in different hotels, starting at The Colesbourne Inn in the Cotswolds, then The Harbour Inn in Porthleven, and finally The Moorland Hotel near Dartmoor.", spanish: "Me hospedaré en diferentes hoteles, empezando en The Colesbourne Inn en los Cotswolds, luego The Harbour Inn en Porthleven, y finalmente The Moorland Hotel cerca de Dartmoor." },
+                            { type: "question", english: "Do you have a return ticket?", spanish: "¿Tiene billete de vuelta?" },
+                            { type: "response", english: "Yes, here it is. My flight departs from Bristol Airport on July 5th.", spanish: "Sí, aquí está. Mi vuelo sale del Aeropuerto de Bristol el 5 de julio." },
+                            { type: "question", english: "Do you have anything to declare?", spanish: "¿Tiene algo que declarar?" },
+                            { type: "response", english: "No, nothing to declare, thank you.", spanish: "No, nada que declarar, gracias." }
+                        ]
+                    },
+                    {
+                        title: "En la Oficina de Alquiler de Coches",
+                        interactions: [
+                            { type: "question", english: "Hello, how can I help you?", spanish: "Hola, ¿cómo puedo ayudarle?" },
+                            { type: "response", english: "Hello, I have a car reservation under [your name]. The reference number is [your booking reference].", spanish: "Hola, tengo una reserva de coche a nombre de [tu nombre]. El número de referencia es [tu número de reserva]." },
+                            { type: "question", english: "Could I see your driving license and credit card, please?", spanish: "¿Podría ver su carné de conducir y su tarjeta de crédito, por favor?" },
+                            { type: "response", english: "Certainly, here they are. This is my Spanish driving license.", spanish: "Claro, aquí están. Este es mi carné de conducir español." },
+                            { type: "question", english: "Would you like to add any extra insurance or a sat nav?", spanish: "¿Le gustaría añadir algún seguro extra o un GPS?" },
+                            { type: "response", english: "No, thank you, I think I have full coverage already. And I'll be using my phone for navigation.", spanish: "No, gracias, creo que ya tengo cobertura completa. Y usaré mi teléfono para la navegación." },
+                            { type: "response", english: "Yes, please, what are the options for full coverage insurance, and how much would that be per day?", spanish: "Sí, por favor, ¿cuáles son las opciones para el seguro a todo riesgo y cuánto sería por día?" },
+                            { type: "question", english: "The fuel policy is full to full. Please return the car with a full tank.", spanish: "La política de combustible es lleno a lleno. Por favor, devuelva el coche con el depósito lleno." },
+                            { type: "response", english: "Understood, thank you. And where exactly do I pick up the car?", spanish: "Entendido, gracias. ¿Y dónde recojo exactamente el coche?" },
+                            { type: "question", english: "Is there a specific car park or bay number for pick-up?", spanish: "¿Hay un aparcamiento o número de plaza específico para la recogida?" },
+                            { type: "question", english: "What should I do if I have a breakdown or an accident?", spanish: "¿Qué debo hacer si tengo una avería o un accidente?" },
+                            { type: "question", english: "Does the car have an automatic or manual transmission?", spanish: "¿El coche tiene transmisión automática o manual?" }
+                        ]
+                    }
+                ]
+            },
+            "En el Hotel / Alojamiento": {
+                context: "Llegando a tu hotel para hacer el check-in después de un día de viaje.",
+                sections: [
+                    {
+                        title: "En la Recepción",
+                        interactions: [
+                            { type: "question", english: "Good evening, welcome to [Hotel Name]. Do you have a reservation?", spanish: "Buenas noches, bienvenido a [Nombre del Hotel]. ¿Tiene una reserva?" },
+                            { type: "response", english: "Good evening, yes, I have a reservation under [your name]. My confirmation number is [confirmation number].", spanish: "Buenas noches, sí, tengo una reserva a nombre de [tu nombre]. Mi número de confirmación es [número de confirmación]." },
+                            { type: "question", english: "Could I have your passport/ID, please?", spanish: "¿Podría ver su pasaporte/DNI, por favor?" },
+                            { type: "response", english: "Here you go.", spanish: "Aquí tiene." },
+                            { type: "question", english: "How long will you be staying?", spanish: "¿Cuánto tiempo se va a quedar?" },
+                            { type: "response", english: "We'll be staying for X nights, until [date of check-out].", spanish: "Nos quedaremos X noches, hasta el [fecha de salida]." },
+                            { type: "question", english: "How will you be paying for your stay?", spanish: "¿Cómo va a pagar su estancia?" },
+                            { type: "response", english: "By card, please.", spanish: "Con tarjeta, por favor." },
+                            { type: "question", english: "Here's your key card/key. Your room number is [room number] on the [floor number] floor. Breakfast is served from [time] to [time] in the [location].", spanish: "Aquí tiene su tarjeta/llave. Su número de habitación es [número de habitación] en la [número de planta] planta. El desayuno se sirve de [hora] a [hora] en [ubicación]." },
+                            { type: "response", english: "Thank you very much. Is there Wi-Fi available in the room? What's the password?", spanish: "Muchas gracias. ¿Hay Wi-Fi disponible en la habitación? ¿Cuál es la contraseña?" },
+                            { type: "response", english: "What time is check-out tomorrow/on [date of check-out]?", spanish: "¿A qué hora es el check-out mañana/el [fecha de salida]?" },
+                            { type: "question", english: "Could you tell me the best way to get to my room?", spanish: "¿Podría indicarme la mejor manera de llegar a mi habitación?" },
+                            { type: "question", english: "Is there someone who can help with the luggage?", spanish: "¿Hay alguien que pueda ayudarme con el equipaje?" }
+                        ]
+                    },
+                    {
+                        title: "Para Consultas Generales en el Hotel",
+                        interactions: [
+                            { type: "question", english: "Excuse me, could you tell me how to get to [place], please?", spanish: "Disculpe, ¿podría decirme cómo llegar a [lugar], por favor?" },
+                            { type: "question", english: "Could you recommend a good local restaurant nearby, perhaps serving traditional British food?", spanish: "¿Podría recomendarme un buen restaurante local cerca, quizás que sirva comida tradicional británica?" },
+                            { type: "question", english: "Is there a taxi service available from the hotel, and could you help me book one for [time]?", spanish: "¿Hay servicio de taxi disponible desde el hotel, y podría ayudarme a reservar uno para las [hora]?" },
+                            { type: "question", english: "Could I have an extra pillow/towel/blanket, please?", spanish: "¿Podría tener una almohada/toalla/manta extra, por favor?" },
+                            { type: "question", english: "What are the opening hours for the hotel restaurant/bar?", spanish: "¿Cuál es el horario de apertura del restaurante/bar del hotel?" },
+                            { type: "question", english: "Is there a gym or swimming pool here, and what are the hours?", spanish: "¿Hay gimnasio o piscina aquí, y cuáles son los horarios?" },
+                            { type: "question", english: "Could I request a wake-up call for [time] tomorrow morning?", spanish: "¿Podría solicitar una llamada despertador para las [hora] de mañana por la mañana?" },
+                            { type: "question", english: "Is there parking available for guests, and is there a charge?", spanish: "¿Hay aparcamiento disponible para los huéspedes, y tiene coste?" },
+                            { type: "question", english: "Could you tell me about local transport options, like bus stops or train stations?", spanish: "¿Podría informarme sobre las opciones de transporte local, como paradas de autobús o estaciones de tren?" }
+                        ]
+                    }
+                ]
+            },
+            "En Restaurantes y Pubs": {
+                context: "Interactuando con el personal para pedir mesa, comida y bebida, o al pagar la cuenta.",
+                sections: [
+                    {
+                        title: "Para Pedir una Mesa",
+                        interactions: [
+                            { type: "question", english: "Hello, a table for two, please.", spanish: "Hola, una mesa para dos, por favor." },
+                            { type: "question", english: "Do you have any availability for dinner tonight around [time]?", spanish: "¿Tienen disponibilidad para cenar esta noche alrededor de las [hora]?" },
+                            { type: "question", english: "We have a reservation under [your name] for [number] people at [time].", spanish: "Tenemos una reserva a nombre de [tu nombre] para [número] personas a las [hora]." },
+                            { type: "question", english: "Smoking or non-smoking?", spanish: "¿Fumadores o no fumadores?" },
+                            { type: "response", english: "Non-smoking, please.", spanish: "No fumadores, por favor." },
+                            { type: "question", english: "Do you have any tables available outside/on the terrace?", spanish: "¿Tienen mesas disponibles fuera/en la terraza?" },
+                            { type: "question", english: "Could we get a high chair for a child, please?", spanish: "¿Podríamos tener una silla alta para un niño, por favor?" },
+                            { type: "question", english: "It will be a 15-minute wait for a table, would that be okay?", spanish: "Habrá que esperar 15 minutos por una mesa, ¿estaría bien?" },
+                            { type: "response", english: "Yes, that's fine, thank you.", spanish: "Sí, está bien, gracias." },
+                            { type: "response", english: "Could we wait at the bar?", spanish: "¿Podríamos esperar en la barra?" }
+                        ]
+                    },
+                    {
+                        title: "Para Pedir Comida y Bebida",
+                        interactions: [
+                            { type: "question", english: "Could I see the menu, please? / Excuse me, could we see the menu?", spanish: "¿Podría ver el menú, por favor? / Disculpe, ¿podríamos ver el menú?" },
+                            { type: "question", english: "Are you ready to order?", spanish: "¿Están listos para pedir?" },
+                            { type: "response", english: "Yes, I'll have the [dish name], please.", spanish: "Sí, tomaré el/la [nombre del plato], por favor." },
+                            { type: "question", english: "What do you recommend? / What are the daily specials today?", spanish: "¿Qué me recomienda? / ¿Cuáles son los especiales del día de hoy?" },
+                            { type: "question", english: "Is this dish vegetarian/vegan/gluten-free? / Does this contain any nuts/dairy/shellfish? I have an allergy to [allergy].", spanish: "¿Este plato es vegetariano/vegano/sin gluten? / ¿Contiene frutos secos/lácteos/marisco? Tengo alergia a [alergia]." },
+                            { type: "question", english: "Could I have a pint of local ale, please? / And a glass of [wine/juice/fizzy drink], please.", spanish: "¿Podría tomar una pinta de cerveza local, por favor? / Y un vaso de [vino/zumo/bebida con gas], por favor." },
+                            { type: "question", english: "A glass of still/sparkling water, please.", spanish: "Un vaso de agua sin gas/con gas, por favor." },
+                            { type: "question", english: "Could I also have a side of chips/salad/seasonal vegetables with that?", spanish: "¿Podría tener también una ración de patatas fritas/ensalada/verduras de temporada con eso?" },
+                            { type: "question", english: "Is the [dish name] a large portion, or would you recommend adding a side?", spanish: "¿La ración de [nombre del plato] es grande, o recomendaría añadir una guarnición?" },
+                            { type: "question", english: "Could I have the dressing on the side, please?", spanish: "¿Podría tener el aliño aparte, por favor?" },
+                            { type: "question", english: "Could you please tell me about the dessert menu?", spanish: "¿Podría hablarme sobre el menú de postres, por favor?" },
+                            { type: "question", english: "Anything else for you?", spanish: "¿Algo más para usted?" },
+                            { type: "response", english: "No, thank you, that will be all for now.", spanish: "No, gracias, eso será todo por ahora." },
+                            { type: "question", english: "Excuse me, could we order some more drinks, please?", spanish: "Disculpe, ¿podríamos pedir más bebidas, por favor?" }
+                        ]
+                    },
+                    {
+                        title: "Al Final de la Comida",
+                        interactions: [
+                            { type: "question", english: "Could we have the bill, please? / Check, please.", spanish: "¿Podríamos tener la cuenta, por favor? / La cuenta, por favor." },
+                            { type: "question", english: "Was everything to your satisfaction?", spanish: "¿Todo fue de su agrado?" },
+                            { type: "response", english: "Yes, it was delicious, thank you. Everything was lovely, thank you very much.", spanish: "Sí, estaba delicioso, gracias. Todo estuvo muy bien, muchas gracias." },
+                            { type: "response", english: "The food was generally good, but the [drink/side dish] was [too warm/cold/not what I ordered].", spanish: "La comida estuvo bien en general, pero la [bebida/guarnición] estaba [demasiado caliente/fría/no era lo que pedí]." },
+                            { type: "question", english: "Are you paying by cash or card?", spanish: "¿Va a pagar en efectivo o con tarjeta?" },
+                            { type: "response", english: "By card, please. / Can we pay separately? We'd like to split the bill, please.", spanish: "Con tarjeta, por favor. / ¿Podemos pagar por separado? Nos gustaría dividir la cuenta, por favor." },
+                            { type: "question", english: "Is service included in the bill? / Is a tip expected, or is it discretionary?", spanish: "¿Está incluido el servicio en la cuenta? / ¿Se espera propina, o es discrecional?" },
+                            { type: "question", english: "Could I get a receipt, please?", spanish: "¿Podría darme un recibo, por favor?" },
+                            { type: "question", english: "Could we get this to go? / Can I get a doggy bag for this, please?", spanish: "¿Podríamos llevar esto para llevar? / ¿Puedo pedir una bolsa para llevarme esto, por favor?" }
+                        ]
+                    }
+                ]
+            },
+            "En Atracciones y Museos": {
+                context: "Comprando entradas, pidiendo información o navegando por el lugar.",
+                sections: [
+                    {
+                        title: "En la Entrada/Taquilla",
+                        interactions: [
+                            { type: "question", english: "Hello, how much is an adult ticket? / What's the admission fee for adults?", spanish: "Hola, ¿cuánto cuesta una entrada para adulto? / ¿Cuál es la tarifa de entrada para adultos?" },
+                            { type: "question", english: "Two adult tickets, please, and one child ticket.", spanish: "Dos entradas de adulto, por favor, y una de niño." },
+                            { type: "question", english: "Do you have any discounts for seniors/students/families?", spanish: "¿Tienen algún descuento para mayores/estudiantes/familias?" },
+                            { type: "question", english: "Are you a member of [organisation]?", spanish: "¿Es usted miembro de [organización]?" },
+                            { type: "response", english: "No, I'm not.", spanish: "No, no lo soy." },
+                            { type: "question", english: "What time is the last entry? / What time does the museum close today?", spanish: "¿A qué hora es la última entrada? / ¿A qué hora cierra el museo hoy?" },
+                            { type: "question", english: "Is there an audio guide available, and how much does it cost?", spanish: "¿Hay una audioguía disponible y cuánto cuesta?" },
+                            { type: "question", english: "Are there any guided tours available today, and what are the times?", spanish: "¿Hay visitas guiadas disponibles hoy, y cuáles son los horarios?" },
+                            { type: "question", english: "Is it better to book tickets online or can I just buy them here?", spanish: "¿Es mejor reservar las entradas online o puedo comprarlas aquí directamente?" }
+                        ]
+                    },
+                    {
+                        title: "Para Pedir Información General",
+                        interactions: [
+                            { type: "question", english: "Excuse me, where is the main exhibition/gallery?", spanish: "Disculpe, ¿dónde está la exposición/galería principal?" },
+                            { type: "question", english: "Is photography allowed in all areas? / Can I use flash photography?", spanish: "¿Se permite fotografiar en todas las áreas? / ¿Puedo usar flash al fotografiar?" },
+                            { type: "question", english: "Where are the restrooms/toilets?", spanish: "¿Dónde están los baños?" },
+                            { type: "question", english: "What time does [specific area] close?", spanish: "¿A qué hora cierra [área específica]?" },
+                            { type: "question", english: "Is the [specific exhibit] accessible for wheelchairs/strollers?", spanish: "¿La [exposición específica] es accesible para sillas de ruedas/cochecitos?" },
+                            { type: "question", english: "Is there a gift shop or a café in the building?", spanish: "¿Hay una tienda de regalos o una cafetería en el edificio?" },
+                            { type: "question", english: "Can you recommend which part to see first if I only have an hour?", spanish: "¿Puede recomendarme qué parte ver primero si solo tengo una hora?" }
+                        ]
+                    }
+                ]
+            },
+            "En Tiendas": {
+                context: "Comprando souvenirs, productos locales o alimentos en una tienda.",
+                sections: [
+                    {
+                        title: "Pregunta posible: Can I help you?",
+                        interactions: [
+                            { type: "response", english: "No, thank you, I'm just looking around for now.", spanish: "No, gracias, solo estoy mirando por ahora." },
+                            { type: "response", english: "Yes, I'm looking for [item], do you have any [local cheese/fudge/jam]?", spanish: "Sí, estoy buscando [artículo], ¿tienen [queso local/caramelo cremoso/mermelada]?" },
+                            { type: "question", english: "How much is this? / What's the price of this [item]?", spanish: "¿Cuánto cuesta esto? / ¿Cuál es el precio de este [artículo]?" },
+                            { type: "question", english: "Do you have this in a different size/colour?", spanish: "¿Tiene esto en otra talla/color?" },
+                            { type: "question", english: "Where is the checkout/till?", spanish: "¿Dónde está la caja?" },
+                            { type: "question", english: "Are these products locally sourced?", spanish: "¿Estos productos son de origen local?" },
+                            { type: "question", english: "Do you have any samples to try for the [cheese/jam]?", spanish: "¿Tienen alguna muestra para probar del [queso/mermelada]?" }
+                        ]
+                    },
+                    {
+                        title: "Al Pagar",
+                        interactions: [
+                            { type: "question", english: "Is that all for you today?", spanish: "¿Es todo para usted hoy?" },
+                            { type: "response", english: "Yes, that's all, thank you.", spanish: "Sí, eso es todo, gracias." },
+                            { type: "question", english: "Cash or card?", spanish: "¿Efectivo o tarjeta?" },
+                            { type: "response", english: "Card, please.", spanish: "Con tarjeta, por favor." },
+                            { type: "response", english: "Cash, please. Here's [amount].", spanish: "Efectivo, por favor. Aquí tiene [cantidad]." },
+                            { type: "question", english: "Would you like a bag?", spanish: "¿Quiere una bolsa?" },
+                            { type: "response", english: "Yes, please.", spanish: "Sí, por favor." },
+                            { type: "response", english: "No, thank you, I have my own bag.", spanish: "No, gracias, tengo mi propia bolsa." },
+                            { type: "question", english: "Could you gift wrap this, please? / Is it possible to have this gift wrapped?", spanish: "¿Podría envolver esto para regalo, por favor? / ¿Es posible que me envuelvan esto para regalo?" },
+                            { type: "response", english: "Certainly, that will be an extra [amount].", spanish: "Claro, eso será un extra de [cantidad]." },
+                            { type: "response", english: "Yes, we can do that for you, no problem.", spanish: "Sí, podemos hacerlo por usted, sin problema." },
+                            { type: "question", english: "Could I get a gift receipt for this, please?", spanish: "¿Podría darme un recibo de regalo para esto, por favor?" },
+                            { type: "question", english: "Do you accept [specific currency]?", spanish: "¿Aceptan [moneda específica]?" }
+                        ]
+                    }
+                ]
+            },
+            "Preguntas Generales y de Orientación": {
+                context: "Necesitas pedir direcciones, horarios o simplemente comunicarte educadamente.",
+                sections: [
+                    {
+                        title: "Para Preguntar por Direcciones",
+                        interactions: [
+                            { type: "question", english: "Excuse me, could you tell me how to get to [place], please?", spanish: "Disculpe, ¿podría decirme cómo llegar a [lugar], por favor?" },
+                            { type: "question", english: "Is it far from here? / How far is it to [place]?", spanish: "¿Está lejos de aquí? / ¿A qué distancia está [lugar]?" },
+                            { type: "question", english: "Which way is [direction/place]? / Am I going in the right direction for [place]?", spanish: "¿Hacia dónde está [dirección/lugar]? / ¿Voy en la dirección correcta para [lugar]?" },
+                            { type: "response", english: "It's straight on for about 5 minutes, then turn left at the traffic lights. You'll see it on your right, next to the post office.", spanish: "Es todo recto unos 5 minutos, luego gire a la izquierda en el semáforo. Lo verá a su derecha, junto a la oficina de correos." },
+                            { type: "response", english: "It's about a 10-minute walk from here, just follow this road.", spanish: "Está a unos 10 minutos andando desde aquí, solo siga esta carretera." },
+                            { type: "question", english: "Could you show me on the map, please?", spanish: "¿Podría mostrármelo en el mapa, por favor?" },
+                            { type: "question", english: "Is it quicker to walk or take a bus?", spanish: "¿Es más rápido ir andando o coger un autobús?" }
+                        ]
+                    },
+                    {
+                        title: "Para Preguntar por Horarios",
+                        interactions: [
+                            { type: "question", english: "What time does [place] open/close today?", spanish: "¿A qué hora abre/cierra [lugar] hoy?" },
+                            { type: "question", english: "When is the next bus/train to [place]?", spanish: "¿Cuándo es el próximo autobús/tren a [lugar]?" },
+                            { type: "question", english: "Are you open on public holidays?", spanish: "¿Están abiertos en días festivos?" },
+                            { type: "question", english: "What are your opening hours on weekends?", spanish: "¿Cuál es su horario de apertura los fines de semana?" }
+                        ]
+                    },
+                    {
+                        title: "Disculparse y Agradecer",
+                        interactions: [
+                            { type: "response", english: "Excuse me.", spanish: "Disculpe." },
+                            { type: "response", english: "Sorry.", spanish: "Lo siento." },
+                            { type: "response", english: "I'm so sorry, I didn't mean to.", spanish: "Lo siento mucho, no fue mi intención." },
+                            { type: "response", english: "Thank you.", spanish: "Gracias." },
+                            { type: "response", english: "Thank you very much indeed.", spanish: "Muchísimas gracias." },
+                            { type: "response", english: "You're welcome.", spanish: "De nada." },
+                            { type: "response", english: "No worries.", spanish: "No hay problema." },
+                            { type: "response", english: "That's very kind of you.", spanish: "Es muy amable por su parte." }
+                        ]
+                    }
+                ]
+            },
+            "En el Park & Ride": {
+                context: "Usando el servicio Park & Ride para aparcar tu coche fuera del centro y tomar un autobús o tren hacia el centro de la ciudad.",
+                sections: [
+                    {
+                        title: "En la Taquilla/Máquina de Billetes",
+                        interactions: [
+                            { type: "question", english: "Hello, how much is a return ticket to the city centre for two adults?", spanish: "Hola, ¿cuánto cuesta un billete de ida y vuelta al centro de la ciudad para dos adultos?" },
+                            { type: "question", english: "Where do I catch the bus for the city centre from here?", spanish: "¿Dónde cojo el autobús para el centro de la ciudad desde aquí?" },
+                            { type: "question", english: "Do you need a ticket for the parking as well, or is it included with the bus fare?", spanish: "¿Necesita también un ticket para el aparcamiento, o está incluido con la tarifa del autobús?" },
+                            { type: "response", english: "Yes, please, include the parking ticket.", spanish: "Sí, por favor, incluya el ticket de aparcamiento." },
+                            { type: "question", english: "Are there any family tickets or day passes available that include parking?", spanish: "¿Hay billetes familiares o pases de día disponibles que incluyan el aparcamiento?" },
+                            { type: "question", english: "How often do the buses run to the city centre?", spanish: "¿Con qué frecuencia pasan los autobuses al centro de la ciudad?" },
+                            { type: "question", english: "Do I need to validate my ticket before boarding the bus?", spanish: "¿Necesito validar mi billete antes de subir al autobús?" }
+                        ]
+                    },
+                    {
+                        title: "En el Autobús",
+                        interactions: [
+                            { type: "question", english: "Excuse me, does this bus go to [specific stop/attraction in city centre, e.g., Christ Church College / Radcliffe Camera]?", spanish: "Disculpe, ¿este autobús va a [parada específica/atracción en el centro de la ciudad, por ejemplo, Christ Church College / Radcliffe Camera]?" },
+                            { type: "response", english: "Next stop, [stop name].", spanish: "Próxima parada, [nombre de la parada]." },
+                            { type: "question", english: "Could you please tell me when we get to the stop for [attraction]?", spanish: "¿Podría avisarme cuando lleguemos a la parada de [attraction], por favor?" },
+                            { type: "question", english: "How long does it take to get to the city centre from here?", spanish: "¿Cuánto se tarda en llegar al centro de la ciudad desde aquí?" }
+                        ]
+                    }
+                ]
+            }
+        };
 
-  return (
-    <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 p-4 rounded-lg shadow-xl text-white ${bgColor} flex items-center justify-between animate-fade-in-down`}
-         style={{ animation: 'fade-in-down 0.5s forwards' }}>
-      <p className="font-semibold text-lg">{message}</p>
-      <button onClick={onClose} className="ml-4 text-white hover:text-gray-200 text-2xl font-bold">&times;</button>
-      <style>{`
-        @keyframes fade-in-down {
-          from { opacity: 0; transform: translate(-50%, -20px); }
-          to { opacity: 1; transform: translate(-50%, 0); }
+        // Función para poblar el selector de situaciones
+        function populateSituations() {
+            const selectElement = document.getElementById('situation-select');
+            for (const situation in dialoguesData) {
+                const option = document.createElement('option');
+                option.value = situation;
+                option.textContent = situation;
+                selectElement.appendChild(option);
+            }
         }
-      `}</style>
-    </div>
-  );
-};
 
-export default App;
+        // Función para mostrar los diálogos cuando se selecciona una situación
+        function displayDialogues() {
+            const selectElement = document.getElementById('situation-select');
+            const selectedSituationKey = selectElement.value;
+            const dialoguesDisplay = document.getElementById('dialogues-display');
 
+            if (!selectedSituationKey) {
+                dialoguesDisplay.classList.add('hidden');
+                return;
+            }
+
+            const situationData = dialoguesData[selectedSituationKey];
+            let htmlContent = `<h3 class="text-2xl font-bold text-blue-700 mb-4">${selectedSituationKey}</h3>`;
+            htmlContent += `<p class="text-gray-700 mb-6 italic">${situationData.context}</p>`;
+
+            situationData.sections.forEach(section => {
+                htmlContent += `
+                    <div class="mb-6 last:mb-0 bg-white p-5 rounded-lg shadow-sm border border-blue-100">
+                        <h4 class="text-xl font-semibold text-blue-600 mb-4 border-b pb-2 border-blue-200">${section.title}</h4>
+                        <div class="space-y-4">
+                `;
+                section.interactions.forEach(interaction => {
+                    const bgColorClass = interaction.type === 'question' ? 'bg-blue-100' : 'bg-green-50';
+                    const label = interaction.type === 'question' ? 'Pregunta:' : 'Tu Respuesta:';
+                    htmlContent += `
+                        <div class="p-4 rounded-lg shadow-inner ${bgColorClass}">
+                            <p class="font-semibold text-lg text-gray-800">
+                                ${label}
+                            </p>
+                            <p class="text-blue-900 font-medium text-xl mt-1">${interaction.english}</p>
+                            <p class="text-gray-600 italic text-md mt-1">${interaction.spanish}</p>
+                        </div>
+                    `;
+                });
+                htmlContent += `
+                        </div>
+                    </div>
+                `;
+            });
+
+            dialoguesDisplay.innerHTML = htmlContent;
+            dialoguesDisplay.classList.remove('hidden');
+        }
+
+        // Inicializa el selector de situaciones cuando la página se carga
+        document.addEventListener('DOMContentLoaded', populateSituations);
+    </script>
+</body>
+</html>
