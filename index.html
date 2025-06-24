@@ -161,10 +161,16 @@
                             { type: "response", english: "Yes, it was delicious, thank you. Everything was lovely, thank you very much.", spanish: "Sí, estaba delicioso, gracias. Todo estuvo muy bien, muchas gracias." },
                             { type: "response", english: "The food was generally good, but the [drink/side dish] was [too warm/cold/not what I ordered].", spanish: "La comida estuvo bien en general, pero la [bebida/guarnición] estaba [demasiado caliente/fría/no era lo que pedí]." },
                             { type: "question", english: "Are you paying by cash or card?", spanish: "¿Va a pagar en efectivo o con tarjeta?" },
-                            { type: "response", english: "By card, please. / Can we pay separately? We'd like to split the bill, please.", spanish: "Con tarjeta, por favor. / ¿Podemos pagar por separado? Nos gustaría dividir la cuenta, por favor." },
-                            { type: "question", english: "Is service included in the bill? / Is a tip expected, or is it discretionary?", spanish: "¿Está incluido el servicio en la cuenta? / ¿Se espera propina, o es discrecional?" },
-                            { type: "question", english: "Could I get a receipt, please?", spanish: "¿Podría darme un recibo, por favor?" },
-                            { type: "question", english: "Could we get this to go? / Can I get a doggy bag for this, please?", spanish: "¿Podríamos llevar esto para llevar? / ¿Puedo pedir una bolsa para llevarme esto, por favor?" }
+                            { type: "response", english: "By card, please.", spanish: "Con tarjeta, por favor." },
+                            { type: "response", english: "Cash, please. Here's [amount].", spanish: "Efectivo, por favor. Aquí tiene [cantidad]." },
+                            { type: "question", english: "Would you like a bag?", spanish: "¿Quiere una bolsa?" },
+                            { type: "response", english: "Yes, please.", spanish: "Sí, por favor." },
+                            { type: "response", english: "No, thank you, I have my own bag.", spanish: "No, gracias, tengo mi propia bolsa." },
+                            { type: "question", english: "Could you gift wrap this, please? / Is it possible to have this gift wrapped?", spanish: "¿Podría envolver esto para regalo, por favor? / ¿Es posible que me envuelvan esto para regalo?" },
+                            { type: "response", english: "Certainly, that will be an extra [amount].", spanish: "Claro, eso será un extra de [cantidad]." },
+                            { type: "response", english: "Yes, we can do that for you, no problem.", spanish: "Sí, podemos hacerlo por usted, sin problema." },
+                            { type: "question", english: "Could I get a gift receipt for this, please?", spanish: "¿Podría darme un recibo de regalo para esto, por favor?" },
+                            { type: "question", english: "Do you accept [specific currency]?", spanish: "¿Aceptan [moneda específica]?" }
                         ]
                     }
                 ]
@@ -247,7 +253,12 @@
                             { type: "response", english: "It's straight on for about 5 minutes, then turn left at the traffic lights. You'll see it on your right, next to the post office.", spanish: "Es todo recto unos 5 minutos, luego gire a la izquierda en el semáforo. Lo verá a su derecha, junto a la oficina de correos." },
                             { type: "response", english: "It's about a 10-minute walk from here, just follow this road.", spanish: "Está a unos 10 minutos andando desde aquí, solo siga esta carretera." },
                             { type: "question", english: "Could you show me on the map, please?", spanish: "¿Podría mostrármelo en el mapa, por favor?" },
-                            { type: "question", english: "Is it quicker to walk or take a bus?", spanish: "¿Es más rápido ir andando o coger un autobús?" }
+                            { type: "question", english: "Is it quicker to walk or take a bus?", spanish: "¿Es más rápido ir andando o coger un autobús?" },
+                            // Nuevo diálogo para el mostrador de alquiler de coches en el aeropuerto
+                            { type: "question", english: "Excuse me, I'm looking for the car rental offices. Is there a shuttle bus or transfer service to get there?", spanish: "Disculpe, busco las oficinas de alquiler de coches. ¿Hay un autobús lanzadera o servicio de traslado para llegar allí?" },
+                            { type: "response", english: "Yes, the car rental shuttle departs from [location, e.g., 'stop number 3 outside arrivals' or 'the ground floor of the multi-storey car park']. It runs every 15 minutes.", spanish: "Sí, el autobús lanzadera de alquiler de coches sale de [ubicación, ej., 'la parada número 3 fuera de llegadas' o 'la planta baja del parking de varias plantas']. Pasa cada 15 minutos." },
+                            { type: "response", english: "The car rental desks are on the ground floor, just follow the signs for 'Car Hire' or 'Ground Transportation'. It's about a 5-minute walk from here.", spanish: "Los mostradores de alquiler de coches están en la planta baja, solo siga las señales de 'Car Hire' o 'Ground Transportation'. Está a unos 5 minutos a pie desde aquí." },
+                            { type: "question", english: "Could you point me towards the shuttle stop, please?", spanish: "¿Podría indicarme hacia la parada del autobús lanzadera, por favor?" }
                         ]
                     },
                     {
@@ -295,7 +306,7 @@
                             { type: "question", english: "Excuse me, does this bus go to [specific stop/attraction in city centre, e.g., Christ Church College / Radcliffe Camera]?", spanish: "Disculpe, ¿este autobús va a [parada específica/atracción en el centro de la ciudad, por ejemplo, Christ Church College / Radcliffe Camera]?" },
                             { type: "response", english: "Next stop, [stop name].", spanish: "Próxima parada, [nombre de la parada]." },
                             { type: "question", english: "Could you please tell me when we get to the stop for [attraction]?", spanish: "¿Podría avisarme cuando lleguemos a la parada de [attraction], por favor?" },
-                            { type: "question", english: "How long does it take to get to the city centre from here?", spanish: "¿Cuánto se tarda en llegar al centro de la ciudad desde aquí?" }
+                            { type: "question", english: "How long does it takes to get to the city centre from here?", spanish: "¿Cuánto se tarda en llegar al centro de la ciudad desde aquí?" }
                         ]
                     }
                 ]
