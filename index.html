@@ -70,7 +70,7 @@
                             { type: "question", english: "Would you like to add any extra insurance or a sat nav?", spanish: "¿Le gustaría añadir algún seguro extra o un GPS?" },
                             { type: "response", english: "No, thank you, I think I have full coverage already. And I'll be using my phone for navigation.", spanish: "No, gracias, creo que ya tengo cobertura completa. Y usaré mi teléfono para la navegación." },
                             { type: "response", english: "Yes, please, what are the options for full coverage insurance, and how much would that be per day?", spanish: "Sí, por favor, ¿cuáles son las opciones para el seguro a todo riesgo y cuánto sería por día?" },
-                            { type: "question", english: "The fuel policy is full to full. Please return the car with a full tank.", spanish: "La política de combustible es lleno a lleno. Por favor, devuelva el coche con el depósito lleno." },
+                            { type: "question", english: "The fuel policy is full to full. Please return the car with a full tank.", spanish: "La política de combustible es lleno a lleno. Por Favor, devuelva el coche con el depósito lleno." },
                             { type: "response", english: "Understood, thank you. And where exactly do I pick up the car?", spanish: "Entendido, gracias. ¿Y dónde recojo exactamente el coche?" },
                             { type: "question", english: "Is there a specific car park or bay number for pick-up?", spanish: "¿Hay un aparcamiento o número de plaza específico para la recogida?" },
                             { type: "question", english: "What should I do if I have a breakdown or an accident?", spanish: "¿Qué debo hacer si tengo una avería o un accidente?" },
@@ -254,7 +254,7 @@
                         title: "Para Preguntar por Horarios",
                         interactions: [
                             { type: "question", english: "What time does [place] open/close today?", spanish: "¿A qué hora abre/cierra [lugar] hoy?" },
-                            { type: "question", english: "When is the next bus/train to [place]?", spanish: "¿Cuándo es el próximo autobús/tren a [lugar]?" },
+                            { type: "question", english: "When is the next bus/train to [place]?", spanish: "¿Cuándo es el próximo autobús/tren a [place]?" },
                             { type: "question", english: "Are you open on public holidays?", spanish: "¿Están abiertos en días festivos?" },
                             { type: "question", english: "What are your opening hours on weekends?", spanish: "¿Cuál es su horario de apertura los fines de semana?" }
                         ]
@@ -339,11 +339,11 @@
                     const label = interaction.type === 'question' ? 'Pregunta:' : 'Tu Respuesta:';
                     htmlContent += `
                         <div class="p-4 rounded-lg shadow-inner ${bgColorClass}">
-                            <p class="font-semibold text-lg text-gray-800">
+                            <p class="font-semibold text-lg text-gray-800 break-words">
                                 ${label}
                             </p>
-                            <p class="text-blue-900 font-medium text-xl mt-1">${interaction.english}</p>
-                            <p class="text-gray-600 italic text-md mt-1">${interaction.spanish}</p>
+                            <p class="text-blue-900 font-medium text-xl mt-1 break-words">${interaction.english}</p>
+                            <p class="text-gray-600 italic text-md mt-1 break-words">${interaction.spanish}</p>
                         </div>
                     `;
                 });
