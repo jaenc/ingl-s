@@ -61,20 +61,90 @@
                         ]
                     },
                     {
-                        title: "En la Oficina de Alquiler de Coches",
+                        title: "Recogida de Coche - Situación 1: Saludo y presentación de la reserva",
                         interactions: [
-                            { type: "question", english: "Hello, how can I help you?", spanish: "Hola, ¿cómo puedo ayudarle?" },
-                            { type: "response", english: "Hello, I have a car reservation under [your name]. The reference number is [your booking reference].", spanish: "Hola, tengo una reserva de coche a nombre de [tu nombre]. El número de referencia es [tu número de reserva]." },
-                            { type: "question", english: "Could I see your driving license and credit card, please?", spanish: "¿Podría ver su carné de conducir y su tarjeta de crédito, por favor?" },
-                            { type: "response", english: "Certainly, here they are. This is my Spanish driving license.", spanish: "Claro, aquí están. Este es mi carné de conducir español." },
-                            { type: "question", english: "Would you like to add any extra insurance or a sat nav?", spanish: "¿Le gustaría añadir algún seguro extra o un GPS?" },
-                            { type: "response", english: "No, thank you, I think I have full coverage already. And I'll be using my phone for navigation.", spanish: "No, gracias, creo que ya tengo cobertura completa. Y usaré mi teléfono para la navegación." },
-                            { type: "response", english: "Yes, please, what are the options for full coverage insurance, and how much would that be per day?", spanish: "Sí, por favor, ¿cuáles son las opciones para el seguro a todo riesgo y cuánto sería por día?" },
-                            { type: "question", english: "The fuel policy is full to full. Please return the car with a full tank.", spanish: "La política de combustible es lleno a lleno. Por Favor, devuelva el coche con el depósito lleno." },
-                            { type: "response", english: "Understood, thank you. And where exactly do I pick up the car?", spanish: "Entendido, gracias. ¿Y dónde recojo exactamente el coche?" },
-                            { type: "question", english: "Is there a specific car park or bay number for pick-up?", spanish: "¿Hay un aparcamiento o número de plaza específico para la recogida?" },
-                            { type: "question", english: "What should I do if I have a breakdown or an accident?", spanish: "¿Qué debo hacer si tengo una avería o un accidente?" },
-                            { type: "question", english: "Does the car have an automatic or manual transmission?", spanish: "¿El coche tiene transmisión automática o manual?" }
+                            { type: "response", english: "Hello, I have a car reservation under the name Jose Antonio Encinas.", spanish: "Hola, tengo una reserva de coche a nombre de Jose Antonio Encinas." },
+                            { type: "question", english: "Good morning/afternoon. Can I see your passport and driving license, please?", spanish: "Buenos días/tardes. ¿Puedo ver su pasaporte y su carné de conducir, por favor?" },
+                            { type: "response", english: "Good morning/afternoon. I'm here to pick up a reserved vehicle. My name is Jose Antonio Encinas.", spanish: "Buenos días/tardes. Estoy aquí para recoger un vehículo reservado. Mi nombre es Jose Antonio Encinas." },
+                            { type: "question", english: "Certainly, Could you please provide your identification and driving license?", spanish: "Por supuesto, ¿podría proporcionar su identificación y carné de conducir?" },
+                            { type: "response", english: "Hi, I have a reservation reference number [Número de Reserva]. My name is Jose Antonio Encinas.", spanish: "Hola, tengo un número de referencia de reserva [Número de Reserva]. Mi nombre es Jose Antonio Encinas." },
+                            { type: "question", english: "Thank you. I'll need to see your passport and driving license.", spanish: "Gracias. Necesitaré ver su pasaporte y su carné de conducir." }
+                        ]
+                    },
+                    {
+                        title: "Recogida de Coche - Situación 2: Ofrecimiento de cobertura adicional y tu rechazo",
+                        interactions: [
+                            { type: "question", english: "Would you like to upgrade your insurance coverage for extra protection during your rental?", spanish: "¿Le gustaría mejorar su cobertura de seguro para una protección adicional durante su alquiler?" },
+                            { type: "response", english: "No, thank you. I appreciate the offer, but I already have full insurance coverage for the excess (ekses) / deductible (EEUU) through Booking.com.", spanish: "No, gracias. Agradezco la oferta, pero ya tengo cobertura de seguro completa para la franquicia (excess / deductible) a través de Booking.com." },
+                            { type: "question", english: "We offer additional coverage options that can reduce your excess (ekses) / deductible (EEUU) liability. Are you interested in adding one?", spanish: "Ofrecemos opciones de cobertura adicionales que pueden reducir su responsabilidad de franquicia (excess / deductible). ¿Está interesado en añadir una?" },
+                            { type: "response", english: "That's very kind, but I'm all set. My Booking.com insurance already covers the excess (ekses) / deductible (EEUU) in case of damage or theft.", spanish: "Es muy amable, pero estoy cubierto. Mi seguro de Booking.com ya cubre la franquicia (excess / deductible) en caso de daño o robo." },
+                            { type: "question", english: "To ensure complete peace of mind, we have various insurance packages available. Would you like to review them?", spanish: "Para garantizar una total tranquilidad, tenemos varios paquetes de seguros disponibles. ¿Le gustaría revisarlos?" },
+                            { type: "response", english: "I understand, but I've arranged separate insurance with Booking.com that covers the excess (ekses) / deductible (EEUU), meaning they will reimburse me for any payments to Europcar in case of an incident. So, I don't need additional coverage from Europcar.", spanish: "Entiendo, pero he contratado un seguro por separado con Booking.com que cubre la franquicia (excess / deductible), lo que significa que me reembolsarán cualquier pago a Europcar en caso de incidente. Por lo tanto, no necesito cobertura adicional de Europcar." }
+                        ]
+                    },
+                    {
+                        title: "Recogida de Coche - Situación 3: Preguntar sobre el depósito en la tarjeta",
+                        interactions: [
+                            { type: "response", english: "Could you please confirm the amount of the security deposit that will be held on my card and when it will be released?", spanish: "¿Podría confirmarme el importe del depósito de seguridad que se retendrá en mi tarjeta y cuándo se liberará?" },
+                            { type: "question", english: "The security deposit is £840. It will be pre-authorized on your credit card and typically released within 3 to 5 business days after the car is returned in good condition.", spanish: "El depósito de seguridad es de £840. Será preautorizado en su tarjeta de crédito y normalmente se libera en un plazo de 3 a 5 días hábiles después de que el coche sea devuelto en buenas condiciones." },
+                            { type: "question", english: "The deposit amount is £840. We will block this amount on your card, and it usually takes up to 7 working days for your bank to release it after a smooth return.", spanish: "El importe del depósito es de £840. Bloquearemos esta cantidad en su tarjeta, y normalmente tarda hasta 7 días laborables para que su banco la libere después de una devolución sin problemas." },
+                            { type: "response", english: "Regarding the security deposit, what is the exact amount that will be pre-authorised on my credit card? And when can I expect the hold to be released after I return the car?", spanish: "En cuanto al depósito de seguridad, ¿cuál es el importe exacto que se preautorizará en mi tarjeta de crédito? ¿Y cuándo puedo esperar que se libere la retención después de devolver el coche?" },
+                            { type: "question", english: "The exact amount pre-authorised is £840. This hold is generally released by your bank within 3 to 7 business days following the vehicle's return and final inspection, assuming no damages or extra charges.", spanish: "El importe exacto preautorizado es de £840. Esta retención generalmente es liberada por su banco en un plazo de 3 a 7 días hábiles después de la devolución e inspección final del vehículo, suponiendo que no haya daños ni cargos adicionales." },
+                            { type: "question", english: "It's £840 that will be held as a security deposit. The release timeframe depends on your bank's processing, but it's typically within one week of the rental agreement closing, provided the car is returned as agreed.", spanish: "Son £840 que se retendrán como depósito de seguridad. El plazo de liberación depende del procesamiento de su banco, pero normalmente es dentro de una semana tras el cierre del contrato de alquiler, siempre que el coche se devuelva según lo acordado." },
+                            { type: "response", english: "I saw in the terms that a deposit will be required. Could you specify the exact amount of the deposit and the timeframe for its release once the car is returned in good condition?", spanish: "Vi en los términos que se requerirá un depósito. ¿Podría especificar el importe exacto del depósito y el plazo para su liberación una vez que el coche sea devuelto en buenas condiciones?" },
+                            { type: "question", english: "Yes, the deposit is £840. Once the car is returned without issues, the hold on your card will be released. This process usually takes between 3 to 10 working days, depending on your bank's policies.", spanish: "Sí, el depósito es de £840. Una vez que se devuelva el coche sin problemas, se liberará la retención de su tarjeta. Este proceso suele tardar entre 3 y 10 días laborables, dependiendo de las políticas de su banco." },
+                            { type: "question", english: "The required deposit is £840. It's a pre-authorization on your card, not a charge. It should be released shortly after the car is back and checked, usually within a few days, but always check with your bank for their specific processing times.", spanish: "El depósito requerido es de £840. Es una preautorización en su tarjeta, no un cargo. Debería liberarse poco después de que el coche sea devuelto y revisado, generalmente en unos pocos días, pero consulte siempre con su banco sus plazos de procesamiento específicos." }
+                        ]
+                    },
+                    {
+                        title: "Recogida de Coche - Situación 4: Si insisten y no te entregan las llaves",
+                        interactions: [
+                            { type: "response", english: "I have fulfilled all the terms of my rental agreement, including valid identification, a driving license, and a credit card for the security deposit. I also have comprehensive insurance through Booking.com that covers the excess (ekses) / deductible (EEUU). Could you please explain why I am unable to receive the vehicle keys?", spanish: "He cumplido todos los términos de mi contrato de alquiler, incluyendo identificación válida, carné de conducir y una tarjeta de crédito para el depósito de seguridad. También tengo un seguro a todo riesgo a través de Booking.com que cubre la franquicia (excess / deductible). ¿Podría explicarme por qué no puedo recibir las llaves del vehículo?" },
+                            { type: "question", english: "I apologize for any misunderstanding. We just need to confirm all details on our system. Please wait a moment while I double-check your booking and insurance information.", spanish: "Pido disculpas por cualquier malentendido. Solo necesitamos confirmar todos los detalles en nuestro sistema. Por favor, espere un momento mientras verifico su reserva y la información del seguro." },
+                            { type: "question", english: "Our policy requires a specific type of coverage, and while your Booking.com insurance covers the excess, we recommend our local coverage for direct assistance. However, if you are fully covered, we will proceed. Let me just confirm everything.", spanish: "Nuestra política requiere un tipo específico de cobertura, y aunque su seguro de Booking.com cubre la franquicia, recomendamos nuestra cobertura local para asistencia directa. Sin embargo, si está totalmente cubierto, procederemos. Déjeme confirmar todo." },
+                            { type: "question", english: "There seems to be an issue with processing the security deposit on your card. Could you perhaps try a different card, or may I see your documents again to ensure all information is correctly entered?", spanish: "Parece que hay un problema al procesar el depósito de seguridad en su tarjeta. ¿Podría intentar con otra tarjeta, o puedo ver sus documentos de nuevo para asegurar que toda la información esté correctamente introducida?" },
+                            { type: "question", english: "According to our records, there might be an outstanding payment or a discrepancy in the booking details. Can you show me your reservation confirmation again, please?", spanish: "Según nuestros registros, podría haber un pago pendiente o una discrepancia en los detalles de la reserva. ¿Puede mostrarme su confirmación de reserva de nuevo, por favor?" },
+                            { type: "question", english: "I understand your frustration. Let me get my supervisor to assist us. They can clarify the situation and ensure a smooth handover.", spanish: "Entiendo su frustración. Deje que llame a mi supervisor para que nos ayude. Él puede aclarar la situación y asegurar una entrega sin problemas." }
+                        ]
+                    },
+                    {
+                        title: "Recogida de Coche - Situación 5: Preguntar sobre qué número llamar en caso de avería o accidente",
+                        interactions: [
+                            { type: "response", english: "If I have a breakdown or an accident, what number do I call?", spanish: "Si tengo una avería o un accidente, ¿a qué número llamo?" },
+                            { type: "question", english: "You should call our roadside assistance at [Número de Teléfono]. They will guide you through the process.", spanish: "Debe llamar a nuestra asistencia en carretera al [Número de Teléfono]. Ellos le guiarán en el proceso." },
+                            { type: "response", english: "What number should I call for roadside assistance or in case of an accident?", spanish: "¿A qué número debo llamar para asistencia en carretera o en caso de accidente?" },
+                            { type: "question", english: "The emergency contact number is [Número de Teléfono]. You'll also find it on the key tag and in the rental agreement documentation we provide.", spanish: "El número de contacto de emergencia es [Número de Teléfono]. También lo encontrará en el llavero y en la documentación del contrato de alquiler que le proporcionamos." },
+                             { type: "response", english: "Could you please provide me with the emergency contact number for roadside assistance or in case of an accident? Is there a specific procedure I should follow?", spanish: "¿Podría proporcionarme el número de contacto de emergencia para asistencia en carretera o en caso de accidente? ¿Hay algún procedimiento específico que deba seguir?" },
+                            { type: "question", english: "In case of a breakdown or accident, please call [Número de Teléfono]. If it's an accident, ensure the safety of all parties, exchange details with any other drivers involved, and then contact us immediately. We'll advise you on the next steps.", spanish: "En caso de avería o accidente, llame al [Número de Teléfono]. Si es un accidente, asegure la seguridad de todas las partes, intercambie datos con los otros conductores implicados y luego contáctenos de inmediato. Le asesoraremos sobre los siguientes pasos." }
+                        ]
+                    },
+                    {
+                        title: "Recogida de Coche - Situación 6: Preguntar sobre la ubicación del coche y la salida del parking",
+                        interactions: [
+                            { type: "response", english: "Where can I find the car in the parking lot, and how do I exit the parking area?", spanish: "¿Dónde puedo encontrar el coche en el aparcamiento y cómo salgo de la zona de aparcamiento?" },
+                            { type: "question", english: "Your car, [Marca/Modelo o Matrícula], is parked in section B, row 5. To exit, you'll use the rental agreement barcode at the barrier, or the ticket we provided in your folder.", spanish: "Su coche, [Marca/Modelo o Matrícula], está aparcado en la sección B, fila 5. Para salir, usará el código de barras del contrato de alquiler en la barrera, o el ticket que le proporcionamos en su carpeta." },
+                            { type: "response", english: "Could you please give me precise directions to locate my rental car within the parking facility? Also, what's the procedure for exiting the car park – do I need a ticket, or is there an automated system?", spanish: "¿Podría darme indicaciones precisas para localizar mi coche de alquiler dentro del aparcamiento? Además, ¿cuál es el procedimiento para salir del parking? ¿Necesito un ticket o hay un sistema automatizado?" },
+                            { type: "question", english: "Certainly. After leaving the office, turn left and head towards the multi-story car park. Your car is on level 3, zone D, space 12. For exiting, you will use the keycard provided in your rental packet; simply scan it at the exit barrier.", spanish: "Por supuesto. Después de salir de la oficina, gire a la izquierda y diríjase hacia el aparcamiento de varias plantas. Su coche está en el nivel 3, zona D, plaza 12. Para salir, usará la tarjeta de acceso proporcionada en su paquete de alquiler; simplemente escánela en la barrera de salida." },
+                            { type: "response", english: "After I get the keys, how do I find my vehicle in the parking? And for exiting, do I need a special ticket, or is the exit gate linked to the rental agreement?", spanish: "Después de coger las llaves, ¿cómo encuentro mi vehículo en el parking? Y para salir, ¿necesito un ticket especial, o la barrera de salida está vinculada al contrato de alquiler?" },
+                            { type: "question", english: "The car will be located in bay number [Número de bahía] in the immediate parking area. You'll find a pre-paid exit ticket in the glove compartment, or the gate will open using the vehicle's registration which is linked to your rental agreement.", spanish: "El coche estará ubicado en la plaza número [Número de bahía] en el área de aparcamiento inmediata. Encontrará un ticket de salida prepagado en la guantera, o la barrera se abrirá usando la matrícula del vehículo que está vinculada a su contrato de alquiler." }
+                        ]
+                    },
+                    {
+                        title: "Recogida de Coche - Situación 7: Preguntar sobre la devolución del vehículo",
+                        interactions: [
+                            { type: "response", english: "Could you please explain the process for returning the car? Specifically, where should I drop it off?", spanish: "¿Podría explicarme el proceso para devolver el coche? Específicamente, ¿dónde debo dejarlo?" },
+                            { type: "question", english: "To return the car, please follow the 'Car Rental Returns' signs when you approach the airport. There's a dedicated Europcar drop-off area. You'll park the car, leave the keys in the drop box, and we'll send you an email confirmation.", spanish: "Para devolver el coche, por favor siga las señales de 'Devolución de coches de alquiler' al acercarse al aeropuerto. Hay una zona de entrega dedicada de Europcar. Aparcará el coche, dejará las llaves en el buzón y le enviaremos una confirmación por correo electrónico." },
+                            { type: "response", english: "I'd like to clarify the return procedure for the vehicle. What is the exact location for drop-off, and are there any specific instructions I need to follow regarding fuel or car condition upon return?", spanish: "Me gustaría aclarar el procedimiento de devolución del vehículo. ¿Cuál es la ubicación exacta para la entrega y hay alguna instrucción específica que deba seguir con respecto al combustible o al estado del coche al devolverlo?" },
+                            { type: "question", english: "The exact drop-off is at the 'Europcar Returns' bay, clearly marked at [Dirección/punto de referencia específico]. Please ensure the fuel tank is full, as per your agreement, and remove all personal belongings. A quick visual check will be done upon return for any new damage.", spanish: "La entrega exacta es en la bahía de 'Devoluciones de Europcar', claramente marcada en [Dirección/punto de referencia específico]. Por favor, asegúrese de que el depósito de combustible esté lleno, según su contrato, y retire todas sus pertenencias personales. Se realizará una rápida inspección visual a la devolución por cualquier daño nuevo." },
+                            { type: "response", english: "Could you provide me with details on where and how to return the car on [Fecha de devolución]? Are there specific hours for returns, or is there a key drop-off option if it's outside opening hours?", spanish: "¿Podría darme detalles sobre dónde y cómo devolver el coche el [Fecha de devolución]? ¿Hay horarios específicos para las devoluciones, o hay una opción de buzón para las llaves si es fuera del horario de apertura?" },
+                            { type: "question", english: "On [Fecha de devolución], you can return the car to our office at [Dirección]. Our opening hours are [Horario]. If you return outside these hours, there's a secure key drop-box located next to the main entrance.", spanish: "El [Fecha de devolución], puede devolver el coche a nuestra oficina en [Dirección]. Nuestro horario es de [Horario]. Si devuelve fuera de este horario, hay un buzón de seguridad para llaves situado junto a la entrada principal." }
+                        ]
+                    },
+                    {
+                        title: "Recogida de Coche - Pregunta si no entiendes",
+                        interactions: [
+                            { type: "response", english: "Could you please repeat that?", spanish: "¿Podría repetir eso?" },
+                            { type: "response", english: "Could you explain that more simply, please?", spanish: "¿Podría explicar eso de forma más sencilla, por favor?" }
                         ]
                     }
                 ]
@@ -161,16 +231,10 @@
                             { type: "response", english: "Yes, it was delicious, thank you. Everything was lovely, thank you very much.", spanish: "Sí, estaba delicioso, gracias. Todo estuvo muy bien, muchas gracias." },
                             { type: "response", english: "The food was generally good, but the [drink/side dish] was [too warm/cold/not what I ordered].", spanish: "La comida estuvo bien en general, pero la [bebida/guarnición] estaba [demasiado caliente/fría/no era lo que pedí]." },
                             { type: "question", english: "Are you paying by cash or card?", spanish: "¿Va a pagar en efectivo o con tarjeta?" },
-                            { type: "response", english: "By card, please.", spanish: "Con tarjeta, por favor." },
-                            { type: "response", english: "Cash, please. Here's [amount].", spanish: "Efectivo, por favor. Aquí tiene [cantidad]." },
-                            { type: "question", english: "Would you like a bag?", spanish: "¿Quiere una bolsa?" },
-                            { type: "response", english: "Yes, please.", spanish: "Sí, por favor." },
-                            { type: "response", english: "No, thank you, I have my own bag.", spanish: "No, gracias, tengo mi propia bolsa." },
-                            { type: "question", english: "Could you gift wrap this, please? / Is it possible to have this gift wrapped?", spanish: "¿Podría envolver esto para regalo, por favor? / ¿Es posible que me envuelvan esto para regalo?" },
-                            { type: "response", english: "Certainly, that will be an extra [amount].", spanish: "Claro, eso será un extra de [cantidad]." },
-                            { type: "response", english: "Yes, we can do that for you, no problem.", spanish: "Sí, podemos hacerlo por usted, sin problema." },
-                            { type: "question", english: "Could I get a gift receipt for this, please?", spanish: "¿Podría darme un recibo de regalo para esto, por favor?" },
-                            { type: "question", english: "Do you accept [specific currency]?", spanish: "¿Aceptan [moneda específica]?" }
+                            { type: "response", english: "By card, please. / Can we pay separately? We'd like to split the bill, please.", spanish: "Con tarjeta, por favor. / ¿Podemos pagar por separado? Nos gustaría dividir la cuenta, por favor." },
+                            { type: "question", english: "Is service included in the bill? / Is a tip expected, or is it discretionary?", spanish: "¿Está incluido el servicio en la cuenta? / ¿Se espera propina, o es discrecional?" },
+                            { type: "question", english: "Could I get a receipt, please?", spanish: "¿Podría darme un recibo, por favor?" },
+                            { type: "question", english: "Could we get this to go? / Can I get a doggy bag for this, please?", spanish: "¿Podríamos llevar esto para llevar? / ¿Puedo pedir una bolsa para llevarme esto, por favor?" }
                         ]
                     }
                 ]
@@ -253,19 +317,14 @@
                             { type: "response", english: "It's straight on for about 5 minutes, then turn left at the traffic lights. You'll see it on your right, next to the post office.", spanish: "Es todo recto unos 5 minutos, luego gire a la izquierda en el semáforo. Lo verá a su derecha, junto a la oficina de correos." },
                             { type: "response", english: "It's about a 10-minute walk from here, just follow this road.", spanish: "Está a unos 10 minutos andando desde aquí, solo siga esta carretera." },
                             { type: "question", english: "Could you show me on the map, please?", spanish: "¿Podría mostrármelo en el mapa, por favor?" },
-                            { type: "question", english: "Is it quicker to walk or take a bus?", spanish: "¿Es más rápido ir andando o coger un autobús?" },
-                            // Nuevo diálogo para el mostrador de alquiler de coches en el aeropuerto
-                            { type: "question", english: "Excuse me, I'm looking for the car rental offices. Is there a shuttle bus or transfer service to get there?", spanish: "Disculpe, busco las oficinas de alquiler de coches. ¿Hay un autobús lanzadera o servicio de traslado para llegar allí?" },
-                            { type: "response", english: "Yes, the car rental shuttle departs from [location, e.g., 'stop number 3 outside arrivals' or 'the ground floor of the multi-storey car park']. It runs every 15 minutes.", spanish: "Sí, el autobús lanzadera de alquiler de coches sale de [ubicación, ej., 'la parada número 3 fuera de llegadas' o 'la planta baja del parking de varias plantas']. Pasa cada 15 minutos." },
-                            { type: "response", english: "The car rental desks are on the ground floor, just follow the signs for 'Car Hire' or 'Ground Transportation'. It's about a 5-minute walk from here.", spanish: "Los mostradores de alquiler de coches están en la planta baja, solo siga las señales de 'Car Hire' o 'Ground Transportation'. Está a unos 5 minutos a pie desde aquí." },
-                            { type: "question", english: "Could you point me towards the shuttle stop, please?", spanish: "¿Podría indicarme hacia la parada del autobús lanzadera, por favor?" }
+                            { type: "question", english: "Is it quicker to walk or take a bus?", spanish: "¿Es más rápido ir andando o coger un autobús?" }
                         ]
                     },
                     {
                         title: "Para Preguntar por Horarios",
                         interactions: [
                             { type: "question", english: "What time does [place] open/close today?", spanish: "¿A qué hora abre/cierra [lugar] hoy?" },
-                            { type: "question", english: "When is the next bus/train to [place]?", spanish: "¿Cuándo es el próximo autobús/tren a [place]?" },
+                            { type: "question", english: "When is the next bus/train to [place]?", spanish: "¿Cuándo es el próximo autobús/tren a [lugar]?" },
                             { type: "question", english: "Are you open on public holidays?", spanish: "¿Están abiertos en días festivos?" },
                             { type: "question", english: "What are your opening hours on weekends?", spanish: "¿Cuál es su horario de apertura los fines de semana?" }
                         ]
@@ -306,7 +365,7 @@
                             { type: "question", english: "Excuse me, does this bus go to [specific stop/attraction in city centre, e.g., Christ Church College / Radcliffe Camera]?", spanish: "Disculpe, ¿este autobús va a [parada específica/atracción en el centro de la ciudad, por ejemplo, Christ Church College / Radcliffe Camera]?" },
                             { type: "response", english: "Next stop, [stop name].", spanish: "Próxima parada, [nombre de la parada]." },
                             { type: "question", english: "Could you please tell me when we get to the stop for [attraction]?", spanish: "¿Podría avisarme cuando lleguemos a la parada de [attraction], por favor?" },
-                            { type: "question", english: "How long does it takes to get to the city centre from here?", spanish: "¿Cuánto se tarda en llegar al centro de la ciudad desde aquí?" }
+                            { type: "question", english: "How long does it take to get to the city centre from here?", spanish: "¿Cuánto se tarda en llegar al centro de la ciudad desde aquí?" }
                         ]
                     }
                 ]
@@ -350,11 +409,11 @@
                     const label = interaction.type === 'question' ? 'Pregunta:' : 'Tu Respuesta:';
                     htmlContent += `
                         <div class="p-4 rounded-lg shadow-inner ${bgColorClass}">
-                            <p class="font-semibold text-lg text-gray-800 break-words">
+                            <p class="font-semibold text-lg text-gray-800">
                                 ${label}
                             </p>
-                            <p class="text-blue-900 font-medium text-xl mt-1 break-words">${interaction.english}</p>
-                            <p class="text-gray-600 italic text-md mt-1 break-words">${interaction.spanish}</p>
+                            <p class="text-blue-900 font-medium text-xl mt-1">${interaction.english}</p>
+                            <p class="text-gray-600 italic text-md mt-1">${interaction.spanish}</p>
                         </div>
                     `;
                 });
